@@ -1,0 +1,2466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Babli · SEO Intelligence Operating System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ============================================================
+   DESIGN SYSTEM · Helvetica · #093C76 on #FFFFF0
+   Executive-reporting visual style
+   ============================================================ */
+:root{
+  /* surface */
+  --bg:#FFFFF0;
+  --surface:#FFFFFF;
+  --surface-2:#FAF7E4;
+  --surface-3:#F3EFD7;
+
+  /* navy primary */
+  --navy:#093C76;
+  --navy-2:#1659AD;
+  --navy-3:#4A7BC4;
+  --navy-soft:rgba(9,60,118,.06);
+  --navy-soft-2:rgba(9,60,118,.12);
+
+  /* accent gold */
+  --gold:#B8801A;
+  --gold-soft:rgba(184,128,26,.10);
+
+  /* status */
+  --pos:#1F7A4D;
+  --pos-soft:rgba(31,122,77,.10);
+  --neg:#B3261E;
+  --neg-soft:rgba(179,38,30,.10);
+  --warn:#B8801A;
+  --warn-soft:rgba(184,128,26,.10);
+  --info:#1659AD;
+  --info-soft:rgba(22,89,173,.10);
+
+  /* text */
+  --ink-1:#0E1A2B;
+  --ink-2:#3D4A63;
+  --ink-3:#6B7691;
+  --ink-4:#95A0B8;
+
+  /* lines */
+  --line:#E9E3CB;
+  --line-2:#D9D0B2;
+  --rule:#EFE9D2;
+
+  /* spacing & form */
+  --r-sm:8px;
+  --r-md:10px;
+  --r-lg:14px;
+  --r-xl:18px;
+
+  /* shadows — soft executive */
+  --sh-1:0 1px 2px rgba(9,60,118,.04);
+  --sh-2:0 1px 3px rgba(9,60,118,.05), 0 6px 18px rgba(9,60,118,.06);
+  --sh-3:0 2px 6px rgba(9,60,118,.06), 0 16px 40px rgba(9,60,118,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink-1);
+  font-family:Helvetica,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;
+  font-feature-settings:'kern' 1;}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(9,60,118,.18)}
+
+/* ============================================================
+   APP LAYOUT — fixed left sidebar only
+   ============================================================ */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;
+  background:var(--surface);
+  border-right:1px solid var(--line);
+  padding:24px 18px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;
+  box-shadow:var(--sh-1);
+}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 6px 20px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.brand-mark{width:46px;height:46px;border-radius:var(--r-md);background:#FFFFFF;border:1px solid var(--line);
+  display:grid;place-items:center;padding:4px;overflow:hidden}
+.brand-mark img{width:100%;height:100%;object-fit:contain}
+.brand-text{display:flex;flex-direction:column;line-height:1.2}
+.brand-text b{font-size:14px;color:var(--navy);font-weight:700;letter-spacing:.01em}
+.brand-text span{font-size:10.5px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-4);padding:18px 10px 6px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);
+  cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:500;transition:.15s;
+  border-left:2px solid transparent;}
+.nav-item:hover{background:var(--surface-2);color:var(--navy)}
+.nav-item.active{background:var(--navy-soft);color:var(--navy);font-weight:700;border-left-color:var(--navy)}
+.nav-num{font-size:10.5px;color:var(--ink-4);width:18px;font-variant-numeric:tabular-nums}
+.nav-item.active .nav-num{color:var(--navy)}
+
+.sidebar-foot{margin-top:auto;padding:14px 8px 4px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;font-size:10.5px;color:var(--ink-3);line-height:1.45}
+.source-strip{display:flex;align-items:flex-start;gap:8px}
+.source-strip .dot{margin-top:5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--pos);box-shadow:0 0 0 3px rgba(31,122,77,.18);flex-shrink:0}
+.gh-strip{display:flex;align-items:center;justify-content:center;padding:14px 16px;background:var(--navy);border-radius:var(--r-sm);border:1px solid var(--navy);box-shadow:var(--sh-1)}
+.gh-strip img{height:36px;width:auto;max-width:100%;object-fit:contain;display:block}
+
+/* ============================================================
+   MAIN AREA
+   ============================================================ */
+.main{padding:28px 36px 64px;max-width:1640px;margin:0 auto;width:100%}
+
+/* topbar — metadata only, NO navigation */
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.crumbs{font-size:12px;color:var(--ink-3)}
+.crumbs b{color:var(--ink-1);font-weight:700}
+.spacer{flex:1}
+.meta-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:var(--r-sm);
+  background:var(--surface);border:1px solid var(--line);font-size:12px;color:var(--ink-2);box-shadow:var(--sh-1)}
+.meta-pill b{color:var(--navy);font-weight:600}
+.meta-pill.solid{background:var(--navy);color:#FFFFF0;border-color:var(--navy)}
+.meta-pill.solid b{color:#FFFFF0}
+
+/* ============================================================
+   HERO — navy banner like reference
+   ============================================================ */
+.hero{
+  background:linear-gradient(135deg, #093C76 0%, #0e4a8c 60%, #1659AD 100%);
+  color:#FFFFF0; border-radius:var(--r-xl); padding:34px 36px;
+  margin-bottom:28px; box-shadow:var(--sh-3); position:relative; overflow:hidden;
+}
+.hero::after{content:'';position:absolute;right:-80px;top:-80px;width:340px;height:340px;
+  background:radial-gradient(circle, rgba(255,255,240,.08), transparent 60%);}
+.hero .ek{font-size:11px;letter-spacing:.18em;color:#B9D3F2;text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.hero h1{font-size:30px;margin:0 0 12px;letter-spacing:-.02em;font-weight:700;line-height:1.15;max-width:75ch}
+.hero p.lede{margin:0;color:rgba(255,255,240,.85);font-size:14px;line-height:1.6;max-width:78ch}
+.hero .lede b{color:#FFFFF0;font-weight:600}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,240,.18)}
+.hero-stats .stat{}
+.hero-stats .stat .l{font-size:10.5px;color:#B9D3F2;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.hero-stats .stat .v{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.hero-stats .stat .s{font-size:11.5px;color:#9FB8DA;margin-top:2px}
+
+/* ============================================================
+   SECTION
+   ============================================================ */
+.section{margin-top:36px;scroll-margin-top:20px}
+.section-head{margin-bottom:18px}
+.section-head .eyebrow{font-size:10.5px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.section-head h2{font-size:22px;margin:0;color:var(--navy);font-weight:700;letter-spacing:-.01em}
+.section-head p{margin:6px 0 0;color:var(--ink-3);font-size:13px;max-width:78ch;line-height:1.55}
+
+.section-tools{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+/* ============================================================
+   KPI GRID
+   ============================================================ */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.kpi-grid.c5{grid-template-columns:repeat(5,1fr)}
+.kpi-grid.c4{grid-template-columns:repeat(4,1fr)}
+.kpi-grid.c3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:1280px){.kpi-grid,.kpi-grid.c5,.kpi-grid.c4,.kpi-grid.c3{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:780px){.kpi-grid,.kpi-grid.c5,.kpi-grid.c4,.kpi-grid.c3{grid-template-columns:repeat(2,1fr)}}
+
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:16px 18px;box-shadow:var(--sh-1);min-height:108px;display:flex;flex-direction:column;justify-content:space-between}
+.kpi .lbl{font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.kpi .val{font-size:24px;font-weight:700;margin-top:8px;letter-spacing:-.01em;color:var(--ink-1);line-height:1.1}
+.kpi .sub{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:var(--ink-3)}
+.kpi .sub b{color:var(--ink-1);font-weight:600}
+
+.delta{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;
+  font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.delta.up{background:var(--pos-soft);color:var(--pos)}
+.delta.down{background:var(--neg-soft);color:var(--neg)}
+.delta.flat{background:var(--surface-3);color:var(--ink-3)}
+
+/* ============================================================
+   CARDS / GRIDS
+   ============================================================ */
+.grid{display:grid;gap:18px}
+.g-2{grid-template-columns:1fr 1fr}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.g-2-1{grid-template-columns:2fr 1fr}
+.g-1-2{grid-template-columns:1fr 2fr}
+@media (max-width:1100px){.g-2,.g-3,.g-4,.g-2-1,.g-1-2{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:22px;box-shadow:var(--sh-1)}
+.card.tinted{background:var(--surface-2)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:14px}
+.card-head h3{margin:0;font-size:14px;font-weight:700;color:var(--navy);letter-spacing:.01em}
+.card-head p{margin:4px 0 0;font-size:12px;color:var(--ink-3);line-height:1.45}
+.card-head .right{display:flex;gap:6px;flex-shrink:0}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:6px;
+  border:1px solid var(--line-2);color:var(--ink-2);background:var(--surface-2);font-weight:600}
+.chip.pos{color:var(--pos);border-color:rgba(31,122,77,.3);background:var(--pos-soft)}
+.chip.neg{color:var(--neg);border-color:rgba(179,38,30,.3);background:var(--neg-soft)}
+.chip.warn{color:var(--warn);border-color:rgba(184,128,26,.3);background:var(--warn-soft)}
+.chip.info{color:var(--info);border-color:rgba(22,89,173,.3);background:var(--info-soft)}
+.chip.navy{color:#FFFFF0;background:var(--navy);border-color:var(--navy)}
+
+/* severity */
+.sev{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.04em}
+.sev.crit{background:var(--neg-soft);color:var(--neg)}
+.sev.high{background:var(--warn-soft);color:var(--warn)}
+.sev.med{background:var(--info-soft);color:var(--info)}
+.sev.low{background:var(--pos-soft);color:var(--pos)}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th{text-align:left;font-weight:700;color:var(--ink-3);font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.08em;padding:10px 12px;border-bottom:1px solid var(--line)}
+.table td{padding:11px 12px;border-bottom:1px solid var(--rule);color:var(--ink-1);vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:var(--surface-2)}
+.table .num{text-align:right;font-variant-numeric:tabular-nums}
+.table .truncate{max-width:290px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.table .sub{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:400}
+
+.mini-bar{position:relative;height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;min-width:60px}
+.mini-bar > i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--navy);display:block}
+
+/* scrollable table container — shows ~10 rows, scrolls to reveal rest. Sticky header. */
+.scroll-table{max-height:520px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
+.scroll-table.sm{max-height:480px}
+.scroll-table.lg{max-height:640px}
+.scroll-table table{border-collapse:separate;border-spacing:0}
+.scroll-table .table th{position:sticky;top:0;background:var(--surface-2);z-index:2;box-shadow:0 1px 0 var(--line)}
+.scroll-table .table td{background:var(--surface)}
+.scroll-table::-webkit-scrollbar{width:8px}
+.scroll-table::-webkit-scrollbar-track{background:var(--surface-2);border-radius:4px}
+.scroll-table::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px}
+.scroll-table::-webkit-scrollbar-thumb:hover{background:var(--ink-4)}
+.scroll-hint{font-size:11px;color:var(--ink-3);font-style:italic;margin-top:8px;text-align:right}
+
+/* empty-state for not-connected sources */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;gap:10px;min-height:180px}
+.empty-state .es-icon{width:44px;height:44px;border-radius:12px;background:var(--surface-3);color:var(--ink-3);display:grid;place-items:center;font-size:20px;font-weight:700}
+.empty-state .es-title{font-size:14px;font-weight:700;color:var(--ink-2);margin:0}
+.empty-state .es-msg{font-size:12.5px;color:var(--ink-3);max-width:42ch;line-height:1.55;margin:0}
+.empty-state .es-cta{font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-top:4px}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+.chart-wrap{position:relative;height:260px;padding:6px 0}
+.chart-wrap.sm{height:190px}
+.chart-wrap.tall{height:340px}
+.chart-wrap.xl{height:380px}
+
+/* ============================================================
+   INSIGHT BANNER (executive callout)
+   ============================================================ */
+.callout{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--navy);
+  border-radius:var(--r-md);padding:18px 22px;box-shadow:var(--sh-1);display:flex;gap:16px;align-items:flex-start}
+.callout.gold{border-left-color:var(--gold)}
+.callout.warn{border-left-color:var(--warn);background:linear-gradient(90deg, var(--warn-soft) 0%, var(--surface) 30%)}
+.callout.neg{border-left-color:var(--neg);background:linear-gradient(90deg, var(--neg-soft) 0%, var(--surface) 30%)}
+.callout.pos{border-left-color:var(--pos);background:linear-gradient(90deg, var(--pos-soft) 0%, var(--surface) 30%)}
+.callout-mark{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--navy);
+  text-transform:uppercase;width:90px;flex-shrink:0;padding-top:1px}
+.callout.gold .callout-mark{color:var(--gold)}
+.callout.warn .callout-mark{color:var(--warn)}
+.callout.neg .callout-mark{color:var(--neg)}
+.callout.pos .callout-mark{color:var(--pos)}
+.callout-body{flex:1}
+.callout-body strong{display:block;font-size:14.5px;color:var(--ink-1);margin-bottom:6px;font-weight:700}
+.callout-body p{margin:0;font-size:13.5px;line-height:1.65;color:var(--ink-2)}
+.callout-body b{color:var(--ink-1);font-weight:700}
+
+/* ============================================================
+   TABS (within-section, e.g. Blog/Guides/Lookbooks) — functional
+   ============================================================ */
+.tabs{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px;gap:2px}
+.tabs button{background:transparent;border:none;color:var(--ink-3);padding:7px 14px;border-radius:6px;
+  font-size:12px;cursor:pointer;font-weight:600;font-family:inherit;transition:.15s}
+.tabs button:hover{color:var(--navy)}
+.tabs button.on{background:var(--surface);color:var(--navy);box-shadow:var(--sh-1)}
+
+.tab-panel{display:none}
+.tab-panel.on{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.divider{height:1px;background:var(--line);margin:36px 0 0}
+
+.matrix{position:relative;height:340px;border:1px solid var(--line);border-radius:var(--r-md);background:
+  linear-gradient(to right, transparent 49.6%, var(--line) 49.6% 50.4%, transparent 50.4%),
+  linear-gradient(to bottom, transparent 49.6%, var(--line) 49.6% 50.4%, transparent 50.4%),
+  var(--surface);}
+.matrix .lbl{position:absolute;font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.matrix .q-tl{top:10px;left:14px;color:var(--pos)}
+.matrix .q-tr{top:10px;right:14px;color:var(--gold)}
+.matrix .q-bl{bottom:10px;left:14px;color:var(--ink-4)}
+.matrix .q-br{bottom:10px;right:14px;color:var(--neg)}
+.matrix .pt{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--navy);
+  box-shadow:0 0 0 4px rgba(9,60,118,.16);transform:translate(-50%,-50%);cursor:pointer}
+.matrix .pt span{position:absolute;left:16px;top:-7px;font-size:11px;white-space:nowrap;
+  color:var(--ink-1);background:var(--surface);padding:3px 8px;border-radius:5px;border:1px solid var(--line);
+  box-shadow:var(--sh-1);font-weight:600}
+
+.anomaly{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--line);margin-bottom:10px;
+  font-size:13px;color:var(--ink-2);align-items:flex-start;box-shadow:var(--sh-1);line-height:1.55}
+.anomaly .icn{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;flex-shrink:0;
+  font-size:12px;font-weight:700}
+.anomaly.pos .icn{background:var(--pos-soft);color:var(--pos)}
+.anomaly.neg .icn{background:var(--neg-soft);color:var(--neg)}
+.anomaly.warn .icn{background:var(--warn-soft);color:var(--warn)}
+.anomaly.info .icn{background:var(--info-soft);color:var(--info)}
+.anomaly b{color:var(--ink-1);font-weight:700}
+
+/* task list */
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:18px;padding:16px 18px;
+  border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);
+  margin-bottom:10px;box-shadow:var(--sh-1);align-items:center}
+.task .sq{width:38px;height:38px;border-radius:var(--r-sm);background:var(--navy);color:#FFFFF0;
+  display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.02em}
+.task .sq.alt{background:var(--gold)}
+.task .sq.q{background:var(--pos)}
+.task .meta{display:flex;gap:18px;color:var(--ink-3);font-size:11.5px;margin-top:6px;flex-wrap:wrap}
+.task .meta b{color:var(--ink-1);font-weight:600}
+.task .impact{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:130px}
+.task .score{font-weight:700;font-size:22px;line-height:1;color:var(--navy)}
+.task .title{font-weight:700;color:var(--ink-1);font-size:13.5px}
+
+/* heatmap */
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.heat .cell{aspect-ratio:1.5/1;border-radius:4px;background:var(--navy-soft);display:grid;place-items:center;font-size:10px;color:var(--ink-3);font-weight:700}
+
+/* footer */
+.foot{margin-top:60px;padding:24px 0 0;border-top:1px solid var(--line);
+  color:var(--ink-3);font-size:11.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;line-height:1.5}
+
+/* responsive */
+@media (max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto;width:100%;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--line)}
+  .brand{width:100%;border-bottom:none;padding-bottom:8px;margin-bottom:0}
+  .nav-section{display:none}
+  .nav-item{padding:6px 10px;font-size:12px;border-left:none}
+  .nav-item.active{border-left:none;border-bottom:2px solid var(--navy)}
+  .hero{padding:24px;border-radius:var(--r-md)}
+  .hero h1{font-size:22px}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- =========================================================
+     SIDEBAR — ONLY NAVIGATION
+     ========================================================= -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark"><img src="https://babli.in/cdn/shop/files/logo.png?v=1701265077&amp;width=220" alt="Babli"></div>
+    <div class="brand-text">
+      <b>Babli · Intel OS</b>
+      <span>SEO Executive Report</span>
+    </div>
+  </div>
+
+  <div class="nav-section">Intelligence Layers</div>
+  <a class="nav-item active" href="#executive"><span class="nav-num">01</span> Executive Summary</a>
+  <a class="nav-item" href="#health"><span class="nav-num">02</span> SEO Health Center</a>
+  <a class="nav-item" href="#growth"><span class="nav-num">03</span> Organic Growth</a>
+  <a class="nav-item" href="#newret"><span class="nav-num">04</span> New vs Returning</a>
+  <a class="nav-item" href="#serp"><span class="nav-num">05</span> SERP &amp; Keywords</a>
+  <a class="nav-item" href="#content"><span class="nav-num">06</span> Content Performance</a>
+  <a class="nav-item" href="#ecom"><span class="nav-num">07</span> Ecommerce SEO</a>
+  <a class="nav-item" href="#audience"><span class="nav-num">08</span> Audience Intel</a>
+  <a class="nav-item" href="#paid"><span class="nav-num">09</span> SEO vs Paid</a>
+  <a class="nav-item" href="#ai"><span class="nav-num">10</span> GH Insight</a>
+  <a class="nav-item" href="#tasks"><span class="nav-num">11</span> Action Engine</a>
+  <a class="nav-item" href="#abbr"><span class="nav-num">12</span> Abbreviations</a>
+
+  <div class="sidebar-foot">
+    <div class="source-strip">
+      <span class="dot"></span>
+      <span>Live · Windsor.ai · GA4 · GSC · Bing Webmaster Tools · SEMrush · Microsoft Clarity · Shopify · Google Ads · Meta Ads</span>
+    </div>
+    <div class="gh-strip">
+      <img src="https://www.greenhonchos.com/wp-content/uploads/2024/04/Group-2@2x.png" alt="GreenHonchos">
+    </div>
+  </div>
+</aside>
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+<main class="main">
+
+  <!-- topbar (metadata, not navigation) -->
+  <div class="topbar">
+    <div class="crumbs">Brand · <b>Babli</b> &nbsp;|&nbsp; Workspace · <b>GreenHonchos</b></div>
+    <span class="spacer"></span>
+    <div class="meta-pill">Compare: <b>Prev. Period</b></div>
+    <div class="meta-pill">📅 1 May – 21 May 2026 · MTD</div>
+    <div class="meta-pill solid">⚡ Synced <b>4 min ago</b></div>
+  </div>
+
+  <!-- =========================================================
+       01 · EXECUTIVE SUMMARY
+       ========================================================= -->
+  <section class="section" id="executive">
+    <div class="hero">
+      <div class="ek">Layer 01 · Boardroom View</div>
+      <h1>Organic revenue is growing 2.3× faster than traffic — quality, not volume, is driving the lift.</h1>
+      <p class="lede">
+        May MTD shows a structural shift in <b>traffic quality</b>: organic sessions are up <b>+15.9%</b>, but organic revenue is up <b>+35.5%</b> and conversion rate is up <b>+6.1%</b>. <b>Dresses</b> and <b>Co-ord Sets</b> contributed <b>62%</b> of incremental SEO revenue. Mobile delivered <b>80%</b> of organic orders. Paid is leaning heavily on brand keywords — there is an estimated <b>₹14.2L/yr</b> annualised reallocation opportunity.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><div class="l">Organic Revenue</div><div class="v">₹3.39 L</div><div class="s">+35.5% vs prev period</div></div>
+        <div class="stat"><div class="l">Organic Sessions</div><div class="v">5,129</div><div class="s">+15.9% · share 1.60%</div></div>
+        <div class="stat"><div class="l">Organic CVR</div><div class="v">2.30%</div><div class="s">+6.1% · index 233 vs site</div></div>
+        <div class="stat"><div class="l">Open Action Items</div><div class="v">17</div><div class="s">3 critical · 4 high</div></div>
+      </div>
+    </div>
+
+    <!-- DEFINITION CALLOUT — applies report-wide -->
+    <div class="callout gold" style="margin-bottom:24px">
+      <div class="callout-mark">Definition</div>
+      <div class="callout-body">
+        <strong>Organic = Organic Search + Organic Shopping + AI Referrals</strong>
+        <p>
+          Throughout this report, <b>"Organic"</b> consistently refers to the combined contribution of three GA4 channels: <b>Organic Search</b> (Google, Bing, others), <b>Organic Shopping</b> (Google free shopping listings, Shopify Merchant Center) and <b>AI Referrals</b> (Perplexity, ChatGPT, Gemini, Claude). Every metric, chart and table uses this same definition unless explicitly stated otherwise.
+        </p>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="eyebrow">Week-on-Week Vital Signs</div>
+      <h2>Headline KPIs</h2>
+      <p>Six executive metrics tracked against the previous period. Every delta is meaningful at this scale of business.</p>
+    </div>
+
+    <div class="kpi-grid c5">
+      <div class="kpi">
+        <div class="lbl">Organic Revenue<span class="delta up">+35.5%</span></div>
+        <div class="val">₹3.39 L</div>
+        <div class="sub">vs ₹2.50 L last period</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Organic Sessions<span class="delta up">+15.9%</span></div>
+        <div class="val">5,129</div>
+        <div class="sub">Share <b>1.60%</b> of total</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Organic Orders<span class="delta up">+22.9%</span></div>
+        <div class="val">118</div>
+        <div class="sub">Share <b>3.66%</b> of total</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Organic CVR<span class="delta up">+6.1%</span></div>
+        <div class="val">2.30%</div>
+        <div class="sub">Index <b>233</b> vs site CVR</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Organic AOV<span class="delta up">+10.2%</span></div>
+        <div class="val">₹2,873</div>
+        <div class="sub">+₹160 vs site avg</div>
+      </div>
+    </div>
+
+    <!-- ORGANIC CHANNEL BREAKDOWN -->
+    <div class="section-head" style="margin-top:32px;margin-bottom:14px">
+      <div class="eyebrow">Organic Channel Breakdown</div>
+      <h2 style="font-size:18px">Organic = Organic Search + Organic Shopping + AI Referrals</h2>
+      <p>Decomposition of the 5,129 organic sessions and ₹3.39L organic revenue across the three constituent sub-channels.</p>
+    </div>
+
+    <div class="grid g-3">
+      <div class="card">
+        <div class="card-head"><h3>Organic Search</h3><span class="chip navy">88.1% share</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Sessions</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">4,520</div><div style="font-size:11.5px;color:var(--pos);font-weight:600;margin-top:2px">+13.6%</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Revenue</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">₹3.12L</div><div style="font-size:11.5px;color:var(--pos);font-weight:600;margin-top:2px">+27.2%</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Orders</div><div style="font-size:18px;font-weight:700;color:var(--ink-1);margin-top:4px">107</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">CVR · AOV</div><div style="font-size:14px;font-weight:700;color:var(--ink-1);margin-top:4px">2.4% · ₹2,918</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Organic Shopping</h3><span class="chip">10.3% share</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Sessions</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">526</div><div style="font-size:11.5px;color:var(--pos);font-weight:600;margin-top:2px">+19.5%</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Revenue</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">₹26.8K</div><div style="font-size:11.5px;color:var(--pos);font-weight:600;margin-top:2px">+854.4%</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Orders</div><div style="font-size:18px;font-weight:700;color:var(--ink-1);margin-top:4px">11</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">CVR · AOV</div><div style="font-size:14px;font-weight:700;color:var(--ink-1);margin-top:4px">2.1% · ₹2,434</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>AI Referrals</h3><span class="chip warn">0.6% share · emerging</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Sessions</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">29</div><div style="font-size:11.5px;color:var(--neg);font-weight:600;margin-top:2px">-39.6%</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Revenue</div><div style="font-size:22px;font-weight:700;color:var(--ink-1);margin-top:4px">₹0</div><div style="font-size:11.5px;color:var(--neg);font-weight:600;margin-top:2px">no orders yet</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Sources</div><div style="font-size:13px;font-weight:700;color:var(--ink-1);margin-top:4px">Perplexity, ChatGPT, Gemini</div></div>
+          <div><div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Action</div><div style="font-size:13px;font-weight:700;color:var(--ink-1);margin-top:4px">Ship LLMs.txt</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div><h3>Channel Mix Trend — Last 6 Months</h3><p>How Organic Search, Organic Shopping and AI Referrals evolved over the last 6 months</p></div>
+      </div>
+      <!-- explicit legend chips so identity is unmistakable even before chart paints -->
+      <div style="display:flex;gap:18px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#093C76;display:inline-block"></span> Organic Search</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#B8801A;display:inline-block"></span> Organic Shopping</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#1F7A4D;display:inline-block"></span> AI Referrals</span>
+      </div>
+      <div class="chart-wrap"><canvas id="orgChannels"></canvas></div>
+    </div>
+
+    <div style="margin-top:24px">
+      <div class="callout">
+        <div class="callout-mark">AI Brief</div>
+        <div class="callout-body">
+          <strong>Quality of traffic is compounding — but CTR decay is masking impressions growth.</strong>
+          <p>
+            Organic revenue grew <b>+35.5%</b> on only <b>+15.9%</b> session growth — the strongest quality-of-traffic improvement in 6 months. Two structural drivers: <b>(1)</b> Co-ord Sets jumped from rank 20 → 8 on <i>cotton co ords</i> (480 vol) and <i>cotton co ord set</i> (6,600 vol) unlocking high-AOV demand. <b>(2)</b> Returning organic users now convert at <b>3.6%</b> vs <b>1.5%</b> for new — retention loops are kicking in.
+            <br><br>
+            <b>Risk:</b> Site-wide CTR is down <b>-10.5%</b> despite +9.3% impressions — meta-title decay on Tops-Shirts collection and the Crop-Top blog is leaking roughly <b>4,800 monthly clicks</b>. Paid is overpaying for the brand keyword "babli" (₹15.3K spend, 6.0 ROAS, organic rank 1) — <b>~₹14.2L annualised savings</b> available if reallocated.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-2-1" style="margin-top:24px">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Organic Revenue vs Sessions — 6-Month Trajectory</h3>
+            <p>Widening gap = quality compounding. Revenue (left) outpacing sessions (right).</p>
+          </div>
+          <div class="right"><span class="chip navy">Monthly</span></div>
+        </div>
+        <div class="chart-wrap tall"><canvas id="execRev"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Revenue Channel Mix</h3>
+            <p>Composition of total revenue · MTD</p>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="execMix"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div>
+          <h3>Projection vs Achievement — Pacing Health</h3>
+          <p>GA4 actuals plotted against targets. Source &amp; type of each target is annotated below the metric.</p>
+        </div>
+        <span class="chip info">Source-tagged</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:6px">
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Sessions Pace</div>
+          <div style="font-size:22px;font-weight:700;margin:6px 0;color:var(--ink-1)">5,129 / 6,800</div>
+          <div class="mini-bar" style="height:8px"><i style="width:75%"></i></div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:6px">75% · pacing <b style="color:var(--pos)">+8% to plan</b></div>
+          <div style="font-size:10.5px;color:var(--ink-4);margin-top:4px;font-style:italic">Target: Google Sheet projection (set by PM team)</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Revenue Pace</div>
+          <div style="font-size:22px;font-weight:700;margin:6px 0;color:var(--ink-1)">₹3.39L / ₹4.50L</div>
+          <div class="mini-bar" style="height:8px"><i style="width:75.3%;background:var(--pos)"></i></div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:6px">75% · on track to clear ₹5.0L</div>
+          <div style="font-size:10.5px;color:var(--ink-4);margin-top:4px;font-style:italic">Target: Google Sheet projection (set by PM team)</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================
+       02 · SEO HEALTH COMMAND CENTER
+       ========================================================= -->
+  <section class="section" id="health">
+    <div class="section-head">
+      <div class="eyebrow">Layer 02</div>
+      <h2>SEO Health Command Center</h2>
+      <p>Technical SEO posture across crawlability, indexability, performance, schema and linking. Every issue priced in lost monthly revenue.</p>
+    </div>
+
+    <div class="kpi-grid c5">
+      <div class="kpi"><div class="lbl">Site Health<span class="delta up">+2</span></div><div class="val">87 <span style="font-size:13px;color:var(--ink-3);font-weight:500">/100</span></div><div class="sub">SEMrush composite</div></div>
+      <div class="kpi"><div class="lbl">Performance (CWV)<span class="delta flat">0</span></div><div class="val">100</div><div class="sub">LCP 1.9s · CLS 0.04</div></div>
+      <div class="kpi"><div class="lbl">Crawlability<span class="delta down">-3</span></div><div class="val">90</div><div class="sub">23 pages blocked</div></div>
+      <div class="kpi"><div class="lbl">Indexability<span class="delta up">+1</span></div><div class="val">94</div><div class="sub">11 noindex tags</div></div>
+      <div class="kpi"><div class="lbl">Internal Linking<span class="delta down">-4</span></div><div class="val">70</div><div class="sub">42 orphan pages</div></div>
+    </div>
+
+    <div class="grid g-2-1" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Issue Severity Matrix — Revenue at Risk</h3>
+            <p>Top issues ranked by estimated monthly revenue impact</p>
+          </div>
+          <div class="right"><span class="chip neg">₹2.1L/mo at risk</span></div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr><th>Issue</th><th>Severity</th><th class="num">Pages</th><th class="num">Est. ₹ Impact / mo</th><th class="num">Effort</th><th>Owner</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Duplicate H1 on PDPs</b><div class="sub">114 product pages share H1 with collection</div></td>
+              <td><span class="sev crit">CRITICAL</span></td><td class="num">114</td>
+              <td class="num" style="color:var(--neg);font-weight:600">₹78,400</td><td class="num">Med</td><td>Engg</td>
+            </tr>
+            <tr>
+              <td><b>Missing Product schema</b><div class="sub">Lost rich results — review stars absent</div></td>
+              <td><span class="sev crit">CRITICAL</span></td><td class="num">2,798</td>
+              <td class="num" style="color:var(--neg);font-weight:600">₹62,100</td><td class="num">Low</td><td>Engg</td>
+            </tr>
+            <tr>
+              <td><b>Thin meta descriptions (&lt;70 chars)</b><div class="sub">CTR -14% on affected URLs</div></td>
+              <td><span class="sev high">HIGH</span></td><td class="num">213</td>
+              <td class="num" style="color:var(--warn);font-weight:600">₹34,800</td><td class="num">Low</td><td>Content</td>
+            </tr>
+            <tr>
+              <td><b>Orphan pages with traffic</b><div class="sub">42 pages get GSC clicks but 0 internal links</div></td>
+              <td><span class="sev high">HIGH</span></td><td class="num">42</td>
+              <td class="num" style="color:var(--warn);font-weight:600">₹22,300</td><td class="num">Low</td><td>SEO</td>
+            </tr>
+            <tr>
+              <td><b>Redirect chains 3+ hops</b><div class="sub">Crawl budget waste — slow PDPs</div></td>
+              <td><span class="sev med">MEDIUM</span></td><td class="num">66</td>
+              <td class="num">₹8,900</td><td class="num">Med</td><td>Engg</td>
+            </tr>
+            <tr>
+              <td><b>Mobile tap-target too small</b><div class="sub">PDP "Add to cart" — 36×36 vs 48×48 target</div></td>
+              <td><span class="sev med">MEDIUM</span></td><td class="num">38</td>
+              <td class="num">₹6,400</td><td class="num">Low</td><td>Design</td>
+            </tr>
+            <tr>
+              <td><b>Images without alt text</b></td>
+              <td><span class="sev low">LOW</span></td><td class="num">1,209</td>
+              <td class="num">₹2,100</td><td class="num">Low</td><td>Content</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Health Composite · 90 Days</h3></div>
+        <div class="chart-wrap"><canvas id="healthRadar"></canvas></div>
+        <div style="margin-top:14px">
+          <div class="anomaly warn"><div class="icn">!</div><div><b>Indexability drift detected.</b> 4 new noindex tags on /collections/below-2000 last week — likely Shopify theme update. Verify before next crawl.</div></div>
+          <div class="anomaly pos"><div class="icn">✓</div><div><b>LCP improved 0.4s</b> after hero-image lazy-load fix on May 12. Expected +120 clicks/wk on mobile PDPs.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Core Web Vitals · Field Data</h3><span class="chip pos">All Good</span></div>
+        <div style="display:flex;gap:14px;align-items:flex-end;margin-top:14px">
+          <div style="flex:1"><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">LCP</div><div style="font-size:22px;font-weight:700;margin:4px 0">1.9s</div><div class="mini-bar"><i style="width:70%;background:var(--pos)"></i></div></div>
+          <div style="flex:1"><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">INP</div><div style="font-size:22px;font-weight:700;margin:4px 0">142ms</div><div class="mini-bar"><i style="width:85%;background:var(--pos)"></i></div></div>
+          <div style="flex:1"><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">CLS</div><div style="font-size:22px;font-weight:700;margin:4px 0">0.04</div><div class="mini-bar"><i style="width:95%;background:var(--pos)"></i></div></div>
+        </div>
+        <div style="margin-top:14px;font-size:11.5px;color:var(--ink-3)">CrUX · last 28 days · mobile</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Crawl Budget Map</h3></div>
+        <table class="table">
+          <thead><tr><th>Bucket</th><th class="num">Crawled</th><th class="num">Indexed</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr><td>Product PDPs</td><td class="num">2,798</td><td class="num">2,612</td><td class="num" style="color:var(--warn);font-weight:600">93%</td></tr>
+            <tr><td>Collections</td><td class="num">48</td><td class="num">46</td><td class="num" style="color:var(--pos);font-weight:600">96%</td></tr>
+            <tr><td>Blog Posts</td><td class="num">186</td><td class="num">181</td><td class="num" style="color:var(--pos);font-weight:600">97%</td></tr>
+            <tr><td>Tag/Filter URLs</td><td class="num">4,212</td><td class="num">802</td><td class="num" style="color:var(--neg);font-weight:600">19%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card tinted">
+        <div class="card-head"><h3>Fix-First Recommendation</h3></div>
+        <div style="font-size:16px;font-weight:700;margin-top:8px;color:var(--navy)">Ship Product schema across 2,798 PDPs</div>
+        <div style="font-size:12.5px;color:var(--ink-2);margin-top:10px;line-height:1.6">Estimated <b>+18% rich-result CTR</b> based on category benchmarks. Single-template change in Shopify Liquid. Engineering effort: <b>4 hours</b>. Expected lift: <b>~₹62K/month</b>. ROI: <b>~340×</b> in year one.</div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><span class="chip pos">+₹7.4L/yr</span><span class="chip">4h engg</span><span class="chip neg">CRITICAL</span></div>
+      </div>
+    </div>
+
+    <!-- BING WEBMASTER TOOLS — relocated to bottom of SEO Health Center -->
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Bing Search Performance · Bing Webmaster Tools</h3><p>Clicks, impressions, CTR, average position and top queries from Bing.</p></div>
+          <span class="chip info">Bing WMT</span>
+        </div>
+        <div class="empty-state">
+          <div class="es-icon">⌧</div>
+          <p class="es-title">Bing Webmaster Tools not connected</p>
+          <p class="es-msg">No active Bing Webmaster Tools data source detected for this workspace. Once connected, this card will populate with Clicks, Impressions, CTR, Avg. Position and Top Bing Queries.</p>
+          <div class="es-cta">Connect via Windsor.ai → Bing Webmaster Tools</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Bing Site Health</h3><p>Indexed pages, crawl errors, mobile friendliness, Bing SEO score, sitemap status.</p></div>
+          <span class="chip info">Bing WMT</span>
+        </div>
+        <div class="empty-state">
+          <div class="es-icon">⌧</div>
+          <p class="es-title">Bing Webmaster Tools not connected</p>
+          <p class="es-msg">No Bing site-health data is available yet. Once connected, this card will surface Indexed Pages, Crawl Errors, Mobile Friendliness, Bing SEO Score and Sitemap Status.</p>
+          <div class="es-cta">Connect via Windsor.ai → Bing Webmaster Tools</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       03 · ORGANIC GROWTH
+       ========================================================= -->
+  <section class="section" id="growth">
+    <div class="section-head">
+      <div class="eyebrow">Layer 03</div>
+      <h2>Organic Growth</h2>
+      <p>Sessions, orders, revenue, brand vs non-brand decomposition. Trended over the last 90 days with full organic funnel.</p>
+    </div>
+
+    <div class="grid g-2-1">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Sessions · Revenue · 6-Month Trend</h3><p>Dual-axis: revenue (left, ₹) and sessions (right)</p></div>
+        </div>
+        <div class="chart-wrap tall"><canvas id="growthTrend"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Brand vs Non-Brand · Click Share</h3><p>Stacked: % of monthly organic clicks</p></div>
+        </div>
+        <!-- explicit legend chips above the chart -->
+        <div style="display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#093C76;display:inline-block"></span> Brand (queries containing "babli")</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#B8801A;display:inline-block"></span> Non-Brand (all other queries)</span>
+        </div>
+        <div class="chart-wrap"><canvas id="brandSplit"></canvas></div>
+        <div style="margin-top:14px;font-size:12.5px;color:var(--ink-2);line-height:1.6">
+          Brand share remains <b>54%</b> of organic clicks. Non-brand grew <b style="color:var(--pos)">+41% MoM</b> — first quarter where non-brand is outpacing brand growth. Healthy diversification signal.
+        </div>
+      </div>
+    </div>
+
+    <!-- ORGANIC CVR & AOV 6-MONTH TRENDS — quality story -->
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Organic CVR — 6-Month Trend</h3><p>Quality signal: are organic visitors converting better over time?</p></div>
+          <span class="chip pos">+44% vs Dec</span>
+        </div>
+        <div class="chart-wrap"><canvas id="cvrTrend"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Organic AOV — 6-Month Trend</h3><p>Are organic visitors buying higher-value baskets?</p></div>
+          <span class="chip pos">+15% vs Dec</span>
+        </div>
+        <div class="chart-wrap"><canvas id="aovTrend"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Revenue per Session</h3></div>
+        <div style="font-size:28px;font-weight:700;color:var(--navy);margin-top:6px">₹66.1</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px">vs ₹56.5 last period · <span class="delta up">+17%</span></div>
+        <div class="chart-wrap sm" style="margin-top:10px"><canvas id="rps"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Sessions per Order</h3></div>
+        <div style="font-size:28px;font-weight:700;color:var(--navy);margin-top:6px">43.5</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px">vs 49.8 last period · <span class="delta up">-12.6%</span></div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.55">Sessions efficiency improved — fewer sessions needed to close an order.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Engagement Depth</h3></div>
+        <div style="font-size:28px;font-weight:700;color:var(--navy);margin-top:6px">3.4</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px">Pages/session · <span class="delta up">+0.4</span></div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.55">Mobile <b style="color:var(--ink-1)">2.9 pages</b>; desktop <b style="color:var(--ink-1)">4.6 pages</b>.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><h3>Organic Funnel · MTD</h3><p>Each step shows volume and conversion to next step</p></div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>Impressions</b> · GSC</span><b style="font-variant-numeric:tabular-nums">344,058</b></div><div class="mini-bar" style="height:8px"><i style="width:100%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>Clicks</b> · CTR 1.04%</span><b style="font-variant-numeric:tabular-nums">3,572</b></div><div class="mini-bar" style="height:8px"><i style="width:60%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>Sessions</b> · GA4</span><b style="font-variant-numeric:tabular-nums">5,129</b></div><div class="mini-bar" style="height:8px"><i style="width:50%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>PDP Views</b></span><b style="font-variant-numeric:tabular-nums">2,940</b></div><div class="mini-bar" style="height:8px"><i style="width:35%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>Add to Cart</b></span><b style="font-variant-numeric:tabular-nums">298</b></div><div class="mini-bar" style="height:8px"><i style="width:12%"></i></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><b>Orders</b></span><b style="font-variant-numeric:tabular-nums;color:var(--pos)">118</b></div><div class="mini-bar" style="height:8px"><i style="width:5%;background:var(--pos)"></i></div></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--ink-3);margin-top:14px;line-height:1.6"><b style="color:var(--ink-1)">Biggest leak:</b> Click → Session drop of 30% (slow landing pages and redirect chains on 3 collection URLs). Fix in Layer 02.</div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       04 · NEW vs RETURNING
+       ========================================================= -->
+  <section class="section" id="newret">
+    <div class="section-head">
+      <div class="eyebrow">Layer 04</div>
+      <h2>Organic · New vs Returning Analysis</h2>
+      <p>How acquisition splits between first-time and returning organic visitors — and the dramatic gap in conversion behaviour between them.</p>
+    </div>
+
+    <div class="kpi-grid c4">
+      <div class="kpi">
+        <div class="lbl">New Visitors<span class="delta up">+18.2%</span></div>
+        <div class="val">2,612 <span style="font-size:13px;color:var(--ink-3);font-weight:500">sessions</span></div>
+        <div class="sub">51% of organic sessions</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Returning Visitors<span class="delta up">+13.6%</span></div>
+        <div class="val">2,256 <span style="font-size:13px;color:var(--ink-3);font-weight:500">sessions</span></div>
+        <div class="sub">44% of organic sessions</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">New CVR<span class="delta up">+0.2pp</span></div>
+        <div class="val">1.5%</div>
+        <div class="sub">39 orders · ₹110K rev</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Returning CVR<span class="delta up">+0.7pp</span></div>
+        <div class="val">3.6%</div>
+        <div class="sub">79 orders · ₹229K rev</div>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Sessions Split · New vs Returning · Trend</h3><p>Last 8 weeks</p></div>
+        <div class="chart-wrap"><canvas id="nrTrend"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Behavioural Gap · New vs Returning</h3><p>Four metrics that show the value gap</p></div>
+        </div>
+        <!-- explicit legend chips above the chart -->
+        <div style="display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#B8801A;display:inline-block"></span> New visitors</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-weight:600"><span style="width:12px;height:12px;border-radius:3px;background:#093C76;display:inline-block"></span> Returning visitors</span>
+        </div>
+        <div class="chart-wrap"><canvas id="nrBars"></canvas></div>
+        <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px;line-height:1.5"><b style="color:var(--ink-1)">Reading the chart:</b> Returning bar is taller on CVR, Pages/Session and AOV. New bar is taller only on Bounce — the one metric where lower is better.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><h3>Full Comparison Table</h3><p>All metrics side-by-side · organic only · MTD</p></div>
+      <table class="table">
+        <thead>
+          <tr><th>User Type</th><th class="num">Sessions</th><th class="num">Bounce Rate</th><th class="num">Pages / Session</th><th class="num">Avg. Session (sec)</th><th class="num">Orders</th><th class="num">CVR</th><th class="num">AOV</th><th class="num">Revenue</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>New</b></td><td class="num">2,612</td><td class="num">36%</td><td class="num">2.4</td><td class="num">98</td>
+            <td class="num">39</td><td class="num">1.5%</td><td class="num">₹2,818</td><td class="num">₹109,902</td>
+          </tr>
+          <tr>
+            <td><b>Returning</b></td><td class="num">2,256</td><td class="num">23%</td><td class="num">4.6</td><td class="num">204</td>
+            <td class="num">79</td><td class="num" style="color:var(--pos);font-weight:700">3.6%</td><td class="num">₹2,898</td><td class="num">₹228,942</td>
+          </tr>
+          <tr>
+            <td><b>Unknown</b></td><td class="num">261</td><td class="num">82%</td><td class="num">1.1</td><td class="num">14</td>
+            <td class="num">0</td><td class="num">0.0%</td><td class="num">—</td><td class="num">₹0</td>
+          </tr>
+          <tr style="background:var(--surface-2);font-weight:700">
+            <td>Grand Total</td><td class="num">5,129</td><td class="num">30%</td><td class="num">3.4</td><td class="num">142</td>
+            <td class="num">118</td><td class="num">2.30%</td><td class="num">₹2,873</td><td class="num">₹338,844</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout pos" style="margin-top:18px">
+      <div class="callout-mark">Insight</div>
+      <div class="callout-body">
+        <strong>Returning organic users convert 2.4× higher than new — invest in the retention loop.</strong>
+        <p>Returning visitors deliver <b>66% of organic revenue from 44% of sessions</b>. Lower bounce (23% vs 36%), higher depth (4.6 vs 2.4 pages) and almost 2× session length. Set up a GA4 audience for "Organic Returning" and trigger a lifecycle email 7 days post-first-visit with co-ord/dress recommendations. Projected lift: <b>+₹28K/mo</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       05 · SERP & KEYWORDS
+       ========================================================= -->
+  <section class="section" id="serp">
+    <div class="section-head">
+      <div class="eyebrow">Layer 05</div>
+      <h2>SERP &amp; Keyword Intelligence</h2>
+      <p>Movement tracking, cannibalisation, page-2 opportunities — every recommendation priced in incremental traffic and revenue.</p>
+    </div>
+
+    <!-- TWO KPI BANDS — Targeted vs Total -->
+    <div class="card" style="margin-bottom:14px;background:var(--surface-2)">
+      <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:8px">Targeted Keyword Set · SEMrush position tracker (21 keywords)</div>
+      <div class="kpi-grid c5">
+        <div class="kpi"><div class="lbl">Targeted Keywords<span class="delta up">+17%</span></div><div class="val">21</div><div class="sub">Tracked in SEMrush</div></div>
+        <div class="kpi"><div class="lbl">Top 3 (pos 1-3)<span class="delta up">0</span></div><div class="val">5</div><div class="sub">23.8% of tracked</div></div>
+        <div class="kpi"><div class="lbl">Top 5 (pos 1-5)<span class="delta up">+2</span></div><div class="val">9</div><div class="sub">42.9% of tracked</div></div>
+        <div class="kpi"><div class="lbl">Top 10 / Page 1<span class="delta up">+4</span></div><div class="val">13</div><div class="sub">61.9% of tracked</div></div>
+        <div class="kpi"><div class="lbl">Top 20<span class="delta up">+3</span></div><div class="val">17</div><div class="sub">81% of tracked</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div style="font-size:11px;color:var(--navy);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:8px">Total Organic Keyword Footprint · SEMrush (all discovered)</div>
+      <div class="kpi-grid c5">
+        <div class="kpi"><div class="lbl">Total Organic Keywords<span class="delta up">+12%</span></div><div class="val">985</div><div class="sub">All SEMrush discovered (top 100)</div></div>
+        <div class="kpi"><div class="lbl">Page 1 (pos 1-10)<span class="delta up">+18</span></div><div class="val">113</div><div class="sub">11.5% of total</div></div>
+        <div class="kpi"><div class="lbl">Page 2 (pos 11-20)<span class="delta up">+8</span></div><div class="val">96</div><div class="sub">Opportunity pool</div></div>
+        <div class="kpi"><div class="lbl">Avg. Position<span class="delta up">-0.3</span></div><div class="val">6.9</div><div class="sub">Across all ranking kw</div></div>
+        <div class="kpi"><div class="lbl">Featured Snippets<span class="delta up">+3</span></div><div class="val">11</div><div class="sub">+11 opportunities open</div></div>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Winners · Climbers</h3><p>Position improvements driving incremental revenue</p></div>
+          <span class="chip pos">+₹84K est.</span>
+        </div>
+        <table class="table">
+          <thead><tr><th>Keyword</th><th class="num">Vol</th><th class="num">Sessions</th><th>Move</th><th class="num">Δ ₹</th></tr></thead>
+          <tbody>
+            <tr><td><b>cotton co ord set</b><div class="sub">/collections/co-ord-sets</div></td><td class="num">6,600</td><td class="num">412</td><td><span class="chip pos">14 → 8</span></td><td class="num" style="color:var(--pos);font-weight:600">₹46,200</td></tr>
+            <tr><td><b>cotton co ords</b></td><td class="num">480</td><td class="num">88</td><td><span class="chip pos">20 → 8</span></td><td class="num" style="color:var(--pos);font-weight:600">₹18,400</td></tr>
+            <tr><td><b>cotton tops</b></td><td class="num">6,600</td><td class="num">298</td><td><span class="chip pos">5 → 3</span></td><td class="num" style="color:var(--pos);font-weight:600">₹12,800</td></tr>
+            <tr><td><b>cotton co ord set women</b></td><td class="num">880</td><td class="num">66</td><td><span class="chip pos">20 → 10</span></td><td class="num" style="color:var(--pos);font-weight:600">₹8,600</td></tr>
+            <tr><td><b>cotton bottom</b></td><td class="num">110</td><td class="num">22</td><td><span class="chip pos">13 → 7</span></td><td class="num" style="color:var(--pos);font-weight:600">₹4,100</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Losers · Drops &amp; Decay</h3><p>Lost revenue with root cause</p></div>
+          <span class="chip neg">−₹38K est.</span>
+        </div>
+        <table class="table">
+          <thead><tr><th>Keyword</th><th class="num">Sessions</th><th>Move</th><th>Cause</th><th class="num">Δ ₹</th></tr></thead>
+          <tbody>
+            <tr><td><b>womens tie dye shirts</b></td><td class="num">142</td><td><span class="chip neg">2 → 4</span></td><td>Competitor refresh</td><td class="num" style="color:var(--neg);font-weight:600">−₹14,200</td></tr>
+            <tr><td><b>khadi shorts</b></td><td class="num">98</td><td><span class="chip neg">2 → 5</span></td><td>PDP out of stock 9d</td><td class="num" style="color:var(--neg);font-weight:600">−₹9,000</td></tr>
+            <tr><td><b>tie and dye dresses</b></td><td class="num">76</td><td><span class="chip neg">4 → 7</span></td><td>Cannibalization</td><td class="num" style="color:var(--neg);font-weight:600">−₹8,600</td></tr>
+            <tr><td><b>airport dress for ladies</b></td><td class="num">52</td><td><span class="chip neg">5 → 6</span></td><td>Stale blog (Feb)</td><td class="num" style="color:var(--neg);font-weight:600">−₹3,800</td></tr>
+            <tr><td><b>plum color dress</b></td><td class="num">38</td><td><span class="chip warn">1 → 2</span></td><td>SERP layout change</td><td class="num" style="color:var(--warn);font-weight:600">−₹2,400</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Page-2 Opportunity Engine</h3><p>Move from 11-20 → 6-10 to unlock incremental clicks. Prioritised by impact ÷ effort.</p></div>
+          <span class="chip pos">₹1.42L unlock</span>
+        </div>
+        <table class="table">
+          <thead><tr><th>Keyword</th><th class="num">Vol</th><th class="num">Pos</th><th class="num">Lift if T10</th><th class="num">Est. ₹</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><b>indo western dress</b></td><td class="num">12,100</td><td class="num">17</td><td class="num">+312 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹41,800</td><td><span class="chip neg">New LP</span></td></tr>
+            <tr><td><b>cotton dresses for women</b></td><td class="num">8,100</td><td class="num">14</td><td class="num">+260 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹38,400</td><td><span class="chip warn">Update H1 + FAQ</span></td></tr>
+            <tr><td><b>summer dresses india</b></td><td class="num">4,400</td><td class="num">12</td><td class="num">+148 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹22,100</td><td><span class="chip warn">Internal links</span></td></tr>
+            <tr><td><b>cotton suit set</b></td><td class="num">3,600</td><td class="num">11</td><td class="num">+165 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹19,800</td><td><span class="chip warn">CTR + meta</span></td></tr>
+            <tr><td><b>peplum top design</b></td><td class="num">1,900</td><td class="num">13</td><td class="num">+82 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹12,300</td><td><span class="chip info">Add schema</span></td></tr>
+            <tr><td><b>printed kurti for women</b></td><td class="num">5,400</td><td class="num">15</td><td class="num">+118 clk</td><td class="num" style="color:var(--pos);font-weight:600">₹8,200</td><td><span class="chip info">Internal links</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>High Impressions · Low CTR</h3><p>Title/meta rewrite candidates — pages drowning in impressions, missing clicks</p></div>
+          <span class="chip warn">CTR opportunity</span>
+        </div>
+        <table class="table">
+          <thead><tr><th>Page</th><th class="num">Impr</th><th class="num">CTR</th><th class="num">Target</th><th class="num">Δ Clicks</th></tr></thead>
+          <tbody>
+            <tr><td class="truncate"><b>/blogs/news/how-to-wear-a-crop-top</b></td><td class="num">16,764</td><td class="num" style="color:var(--neg);font-weight:600">0.17%</td><td class="num">3.0%</td><td class="num" style="color:var(--pos);font-weight:600">+474</td></tr>
+            <tr><td class="truncate"><b>/products/sky-blue-wrap-top</b></td><td class="num">15,971</td><td class="num" style="color:var(--neg);font-weight:600">0.04%</td><td class="num">2.5%</td><td class="num" style="color:var(--pos);font-weight:600">+392</td></tr>
+            <tr><td class="truncate"><b>/products/white-sunlower-crop-shirt</b></td><td class="num">14,518</td><td class="num" style="color:var(--neg);font-weight:600">0.15%</td><td class="num">2.5%</td><td class="num" style="color:var(--pos);font-weight:600">+341</td></tr>
+            <tr><td class="truncate"><b>/products/sage-brown-co-ord-set-shorts-top</b></td><td class="num">13,203</td><td class="num" style="color:var(--neg);font-weight:600">0.02%</td><td class="num">2.5%</td><td class="num" style="color:var(--pos);font-weight:600">+327</td></tr>
+            <tr><td class="truncate"><b>/products/blush-pink-shirt</b></td><td class="num">9,545</td><td class="num" style="color:var(--neg);font-weight:600">0.02%</td><td class="num">2.5%</td><td class="num" style="color:var(--pos);font-weight:600">+236</td></tr>
+            <tr><td class="truncate"><b>/pages/about-us</b></td><td class="num">15,322</td><td class="num" style="color:var(--warn);font-weight:600">0.21%</td><td class="num">1.5%</td><td class="num" style="color:var(--pos);font-weight:600">+198</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Position Distribution</h3></div>
+        <div class="chart-wrap"><canvas id="posDist"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Cannibalisation Detector</h3><span class="chip neg">3 conflicts</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+          <div style="border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;font-size:12.5px">
+            <b>"tie dye dress"</b> · 1,900 vol<br>
+            <span style="color:var(--ink-3)">/collections/rang-tie-dye</span> · pos 2<br>
+            <span style="color:var(--ink-3)">/products/tie-dye-pink-maxi</span> · pos 11<br>
+            <span class="chip warn" style="margin-top:8px">Consolidate or canonical</span>
+          </div>
+          <div style="border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;font-size:12.5px">
+            <b>"cotton co ords"</b> · 480 vol<br>
+            <span style="color:var(--ink-3)">/collections/co-ord-sets</span> · pos 8<br>
+            <span style="color:var(--ink-3)">/blogs/news/co-ord-style-guide</span> · pos 14<br>
+            <span class="chip info" style="margin-top:8px">Differentiate intent</span>
+          </div>
+          <div style="border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;font-size:12.5px">
+            <b>"cotton tops"</b> · 6,600 vol<br>
+            <span style="color:var(--ink-3)">/collections/tops-shirts</span> · pos 3<br>
+            <span style="color:var(--ink-3)">/collections/basics-shirts</span> · pos 9<br>
+            <span class="chip warn" style="margin-top:8px">Merge or specialise</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Featured Snippet Opportunities</h3></div>
+        <table class="table">
+          <thead><tr><th>Query</th><th class="num">Vol</th><th class="num">Pos</th></tr></thead>
+          <tbody>
+            <tr><td>what to wear in goa</td><td class="num">2,400</td><td class="num">4</td></tr>
+            <tr><td>airport outfit ideas</td><td class="num">1,300</td><td class="num">6</td></tr>
+            <tr><td>types of co ord sets</td><td class="num">880</td><td class="num">5</td></tr>
+            <tr><td>tie dye dress styling</td><td class="num">590</td><td class="num">3</td></tr>
+            <tr><td>peplum top with jeans</td><td class="num">390</td><td class="num">7</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.5">Add bullet/numbered answer blocks and FAQ schema. Average uplift in snippet capture: <b style="color:var(--pos)">28%</b>.</div>
+      </div>
+    </div>
+
+    <!-- ALL TARGETED KEYWORDS RANKING TABLE — scrollable -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div><h3>All Targeted Keywords · Current Ranking</h3><p>Full SEMrush position-tracker list with landing page, current vs previous position, and search volume. First 20 visible — scroll to reveal the rest.</p></div>
+        <span class="chip navy">Source: SEMrush Position Tracking</span>
+      </div>
+      <div class="scroll-table">
+      <table class="table">
+        <thead><tr><th>Keyword</th><th>Landing Page</th><th class="num">Current Pos</th><th class="num">Previous Pos</th><th>Δ</th><th class="num">Search Vol.</th></tr></thead>
+        <tbody>
+          <tr><td><b>tie dye dress</b></td><td class="truncate">/collections/rang-tie-dye</td><td class="num">2</td><td class="num">2</td><td><span class="chip">flat</span></td><td class="num">1,900</td></tr>
+          <tr><td><b>cotton tops for women</b></td><td class="truncate">/collections/tops-shirts</td><td class="num">2</td><td class="num">2</td><td><span class="chip">flat</span></td><td class="num">22,200</td></tr>
+          <tr><td><b>cotton tops</b></td><td class="truncate">/collections/tops-shirts</td><td class="num">3</td><td class="num">5</td><td><span class="chip pos">▲ 2</span></td><td class="num">6,600</td></tr>
+          <tr><td><b>womens tie dye shirts</b></td><td class="truncate">/collections/rang-tie-dye</td><td class="num">4</td><td class="num">2</td><td><span class="chip neg">▼ 2</span></td><td class="num">1,300</td></tr>
+          <tr><td><b>dress under 2000</b></td><td class="truncate">/collections/below-2000</td><td class="num">5</td><td class="num">6</td><td><span class="chip pos">▲ 1</span></td><td class="num">210</td></tr>
+          <tr><td><b>airport dress for ladies</b></td><td class="truncate">/blogs/news/airport-outfits-for-women…</td><td class="num">6</td><td class="num">5</td><td><span class="chip neg">▼ 1</span></td><td class="num">50</td></tr>
+          <tr><td><b>basic shirts womens</b></td><td class="truncate">/collections/basics-shirts</td><td class="num">6</td><td class="num">—</td><td><span class="chip pos">NEW</span></td><td class="num">390</td></tr>
+          <tr><td><b>bottoms for women</b></td><td class="truncate">/collections/bottoms</td><td class="num">6</td><td class="num">—</td><td><span class="chip pos">NEW</span></td><td class="num">2,400</td></tr>
+          <tr><td><b>cotton bottom</b></td><td class="truncate">/collections/bottoms</td><td class="num">7</td><td class="num">13</td><td><span class="chip pos">▲ 6</span></td><td class="num">110</td></tr>
+          <tr><td><b>tie and dye dresses</b></td><td class="truncate">/collections/rang-tie-dye</td><td class="num">7</td><td class="num">4</td><td><span class="chip neg">▼ 3</span></td><td class="num">1,900</td></tr>
+          <tr><td><b>cotton co ords</b></td><td class="truncate">/collections/co-ord-sets</td><td class="num">8</td><td class="num">20</td><td><span class="chip pos">▲ 12</span></td><td class="num">480</td></tr>
+          <tr><td><b>cotton co ord set</b></td><td class="truncate">/collections/co-ord-sets</td><td class="num">8</td><td class="num">14</td><td><span class="chip pos">▲ 6</span></td><td class="num">6,600</td></tr>
+          <tr><td><b>cotton co ord set women</b></td><td class="truncate">/collections/co-ord-sets</td><td class="num">10</td><td class="num">20</td><td><span class="chip pos">▲ 10</span></td><td class="num">880</td></tr>
+          <tr><td><b>cotton dresses for women</b></td><td class="truncate">/collections/dresses</td><td class="num">14</td><td class="num">16</td><td><span class="chip pos">▲ 2</span></td><td class="num">8,100</td></tr>
+          <tr><td><b>summer dresses india</b></td><td class="truncate">/collections/dresses</td><td class="num">12</td><td class="num">15</td><td><span class="chip pos">▲ 3</span></td><td class="num">4,400</td></tr>
+          <tr><td><b>peplum top design</b></td><td class="truncate">/collections/tops-shirts</td><td class="num">13</td><td class="num">12</td><td><span class="chip neg">▼ 1</span></td><td class="num">1,900</td></tr>
+          <tr><td><b>cotton suit set</b></td><td class="truncate">/collections/co-ord-sets</td><td class="num">11</td><td class="num">14</td><td><span class="chip pos">▲ 3</span></td><td class="num">3,600</td></tr>
+          <tr><td><b>printed kurti for women</b></td><td class="truncate">/collections/new-arrivals</td><td class="num">15</td><td class="num">18</td><td><span class="chip pos">▲ 3</span></td><td class="num">5,400</td></tr>
+          <tr><td><b>indo western dress</b></td><td class="truncate">/collections/dresses</td><td class="num">17</td><td class="num">22</td><td><span class="chip pos">▲ 5</span></td><td class="num">12,100</td></tr>
+          <tr><td><b>khadi shorts</b></td><td class="truncate">/products/khadi-shorts</td><td class="num">5</td><td class="num">2</td><td><span class="chip neg">▼ 3</span></td><td class="num">170</td></tr>
+          <tr><td><b>brown peplum top</b></td><td class="truncate">/products/brown-peplum-top</td><td class="num">2</td><td class="num">2</td><td><span class="chip">flat</span></td><td class="num">260</td></tr>
+          <tr style="background:var(--surface-2);font-weight:700"><td>Grand Total</td><td>—</td><td class="num">Avg 8.4</td><td class="num">Avg 9.7</td><td><span class="chip pos">+1.3 avg</span></td><td class="num">81,160</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="scroll-hint">Scroll within the table to view all keywords ↓</div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================
+       06 · CONTENT PERFORMANCE — with WORKING Blog/Guides/Lookbook tabs
+       ========================================================= -->
+  <section class="section" id="content">
+    <div class="section-head">
+      <div class="eyebrow">Layer 06</div>
+      <h2>Content Performance</h2>
+      <p>Performance of editorial, guide and lookbook content — sessions, time on page, decay risk and topic gaps. Use tabs below to switch content type.</p>
+      <div class="section-tools">
+        <div class="tabs" data-tabset="content">
+          <button class="on" data-tab="blog">Blog</button>
+          <button data-tab="guides">Guides</button>
+          <button data-tab="lookbooks">Lookbooks</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOG PANEL -->
+    <div class="tab-panel on" data-tabpanel="content" data-tab="blog">
+      <div class="grid g-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div><h3>Top Performing Blog Articles</h3><p>Sessions, time on page and conversion performance — organic only</p></div>
+            <span class="chip pos">186 articles</span>
+          </div>
+          <table class="table">
+            <thead><tr><th>Article</th><th class="num">Sessions</th><th class="num">Avg. Time</th><th class="num">Orders</th><th class="num">Revenue</th><th>Health</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>10 Stylish Dresses to Wear in Goa</b><div class="sub">/blogs/news/10-stylish-dresses-to-wear-in-goa</div></td>
+                <td class="num">2,184</td><td class="num">3:42</td><td class="num">24</td><td class="num">₹84,200</td>
+                <td><span class="sev low">FRESH</span></td>
+              </tr>
+              <tr>
+                <td><b>Airport Outfits for Women</b></td>
+                <td class="num">1,612</td><td class="num">2:58</td><td class="num">18</td><td class="num">₹62,400</td>
+                <td><span class="sev high">DECAY</span></td>
+              </tr>
+              <tr>
+                <td><b>How to Wear a Crop Top for Every Body Type</b></td>
+                <td class="num">986</td><td class="num">2:21</td><td class="num">11</td><td class="num">₹41,800</td>
+                <td><span class="sev med">REFRESH</span></td>
+              </tr>
+              <tr>
+                <td><b>Cotton Co-ord Sets: Summer Style Guide</b></td>
+                <td class="num">724</td><td class="num">3:14</td><td class="num">12</td><td class="num">₹38,200</td>
+                <td><span class="sev low">FRESH</span></td>
+              </tr>
+              <tr>
+                <td><b>Peplum Top Styling Ideas</b></td>
+                <td class="num">512</td><td class="num">2:08</td><td class="num">7</td><td class="num">₹22,600</td>
+                <td><span class="sev med">REFRESH</span></td>
+              </tr>
+              <tr>
+                <td><b>How to Style a Tie-Dye Dress</b></td>
+                <td class="num">486</td><td class="num">2:44</td><td class="num">6</td><td class="num">₹19,200</td>
+                <td><span class="sev high">DECAY</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Blog Decay Radar</h3><span class="chip neg">7 decaying</span></div>
+          <div class="chart-wrap"><canvas id="decay"></canvas></div>
+          <div class="callout" style="margin-top:14px;padding:12px 16px">
+            <div class="callout-mark" style="width:auto">★</div>
+            <div class="callout-body">
+              <strong style="font-size:13px">Refresh Priority</strong>
+              <p style="font-size:12.5px"><b>Airport Outfits for Women</b> lost 19% sessions in 28 days. Update intro, replace 2024 product cards, add FAQ schema. Est. recovery: <b>+₹14K/mo</b>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g-4" style="margin-top:18px">
+        <div class="card"><div class="card-head"><h3>AI Recommendation</h3><span class="chip pos">+₹14K/mo</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Refresh:</b> Airport Outfits blog. Replace stale product cards with in-stock Co-ord sets. Add 5-question FAQ block.</p></div>
+        <div class="card"><div class="card-head"><h3>AI Recommendation</h3><span class="chip info">+8 internal links</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Cross-link:</b> Goa Dresses → /collections/dresses with 3 contextual anchors. Strengthens collection authority.</p></div>
+        <div class="card"><div class="card-head"><h3>AI Recommendation</h3><span class="chip warn">CTR +21%</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Rewrite title:</b> Crop Top Body Type — test "7 Crop Top Styles for Every Body Type (2026)".</p></div>
+        <div class="card"><div class="card-head"><h3>AI Recommendation</h3><span class="chip pos">New piece</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Create:</b> "Co-ord Sets for Office: 12 Workwear Looks" — 18.4K vol gap, low DR competitors.</p></div>
+      </div>
+    </div>
+
+    <!-- GUIDES PANEL -->
+    <div class="tab-panel" data-tabpanel="content" data-tab="guides">
+      <div class="grid g-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div><h3>Top Performing Guides</h3><p>Deep-dive style/care guides driving discovery</p></div>
+            <span class="chip">28 published</span>
+          </div>
+          <table class="table">
+            <thead><tr><th>Guide</th><th class="num">Sessions</th><th class="num">Avg. Time</th><th class="num">Orders</th><th class="num">Revenue</th><th>Health</th></tr></thead>
+            <tbody>
+              <tr><td><b>Complete Guide to Cotton Care</b><div class="sub">/guides/cotton-care</div></td><td class="num">1,840</td><td class="num">4:48</td><td class="num">14</td><td class="num">₹46,200</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Co-ord Set Styling Bible</b></td><td class="num">1,212</td><td class="num">5:12</td><td class="num">16</td><td class="num">₹52,800</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Size &amp; Fit Guide — Tops</b></td><td class="num">986</td><td class="num">2:14</td><td class="num">8</td><td class="num">₹24,600</td><td><span class="sev med">REFRESH</span></td></tr>
+              <tr><td><b>How to Choose the Right Dress Length</b></td><td class="num">724</td><td class="num">3:48</td><td class="num">9</td><td class="num">₹28,400</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Layering Guide for Indian Summers</b></td><td class="num">412</td><td class="num">2:54</td><td class="num">4</td><td class="num">₹11,800</td><td><span class="sev high">DECAY</span></td></tr>
+              <tr><td><b>Sustainable Fabric Guide</b></td><td class="num">218</td><td class="num">3:22</td><td class="num">2</td><td class="num">₹6,400</td><td><span class="sev med">REFRESH</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Guides — Sessions Trend</h3><span class="chip pos">+22% MoM</span></div>
+          <div class="chart-wrap"><canvas id="guidesTrend"></canvas></div>
+          <div class="callout pos" style="margin-top:14px;padding:12px 16px">
+            <div class="callout-mark" style="width:auto">★</div>
+            <div class="callout-body">
+              <strong style="font-size:13px">Highest CVR Content Type</strong>
+              <p style="font-size:12.5px">Guides convert at <b>1.32%</b> vs blog <b>0.92%</b>. Reader intent is more commercial. Expand from 28 → 50 guides over next quarter.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g-4" style="margin-top:18px">
+        <div class="card"><div class="card-head"><h3>Guide Recommendation</h3><span class="chip pos">+₹22K/mo</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Create:</b> "Fabric Care 101 — Khadi, Cotton, Linen" — 4,200 vol opportunity, no current ranker.</p></div>
+        <div class="card"><div class="card-head"><h3>Guide Recommendation</h3><span class="chip warn">Refresh</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Update:</b> Layering Guide — replace 2024 outfit photos, add summer-specific section.</p></div>
+        <div class="card"><div class="card-head"><h3>Guide Recommendation</h3><span class="chip info">Schema</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Add HowTo schema</b> across 28 guides — eligible for rich results, estimated +12% CTR.</p></div>
+        <div class="card"><div class="card-head"><h3>Guide Recommendation</h3><span class="chip pos">New format</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Test:</b> Video guide format on top 3 guides — capture YouTube traffic loop back to site.</p></div>
+      </div>
+    </div>
+
+    <!-- LOOKBOOKS PANEL -->
+    <div class="tab-panel" data-tabpanel="content" data-tab="lookbooks">
+      <div class="grid g-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div><h3>Top Performing Lookbooks</h3><p>Seasonal &amp; theme-driven editorial — sessions + conversion data</p></div>
+            <span class="chip">12 lookbooks</span>
+          </div>
+          <table class="table">
+            <thead><tr><th>Lookbook</th><th class="num">Sessions</th><th class="num">Avg. Time</th><th class="num">Orders</th><th class="num">Revenue</th><th>Health</th></tr></thead>
+            <tbody>
+              <tr><td><b>Summer Edit 2026</b><div class="sub">/lookbooks/summer-edit-2026</div></td><td class="num">3,212</td><td class="num">5:48</td><td class="num">42</td><td class="num">₹128,400</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Wedding Season Co-ords</b></td><td class="num">1,684</td><td class="num">4:32</td><td class="num">28</td><td class="num">₹92,600</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Resort Wear Lookbook</b></td><td class="num">1,124</td><td class="num">5:14</td><td class="num">18</td><td class="num">₹62,400</td><td><span class="sev med">REFRESH</span></td></tr>
+              <tr><td><b>Office Capsule Collection</b></td><td class="num">848</td><td class="num">3:48</td><td class="num">14</td><td class="num">₹48,200</td><td><span class="sev low">FRESH</span></td></tr>
+              <tr><td><b>Tie-Dye Story</b></td><td class="num">624</td><td class="num">4:12</td><td class="num">9</td><td class="num">₹28,800</td><td><span class="sev high">DECAY</span></td></tr>
+              <tr><td><b>Winter Layering Edit</b></td><td class="num">218</td><td class="num">3:14</td><td class="num">2</td><td class="num">₹6,800</td><td><span class="sev high">DECAY</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Lookbook → PDP Journey</h3><p>Highest revenue lookbook-driven paths</p></div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+            <div style="padding:12px;border:1px solid var(--line);border-radius:var(--r-sm)"><div style="font-size:12.5px"><b>Summer Edit</b> → Co-ord collection → Lemon Pie Co-ord</div><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-top:4px"><span><b style="color:var(--ink-1)">Sessions:</b> 412</span><span><b style="color:var(--ink-1)">Revenue:</b> ₹38,400</span></div></div>
+            <div style="padding:12px;border:1px solid var(--line);border-radius:var(--r-sm)"><div style="font-size:12.5px"><b>Wedding Season Co-ords</b> → Brass Yellow Co-ord</div><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-top:4px"><span><b style="color:var(--ink-1)">Sessions:</b> 264</span><span><b style="color:var(--ink-1)">Revenue:</b> ₹26,800</span></div></div>
+            <div style="padding:12px;border:1px solid var(--line);border-radius:var(--r-sm)"><div style="font-size:12.5px"><b>Resort Wear</b> → Burnt Orange Dress</div><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-top:4px"><span><b style="color:var(--ink-1)">Sessions:</b> 198</span><span><b style="color:var(--ink-1)">Revenue:</b> ₹18,600</span></div></div>
+          </div>
+          <div class="callout" style="margin-top:14px;padding:12px 16px">
+            <div class="callout-mark" style="width:auto">★</div>
+            <div class="callout-body">
+              <strong style="font-size:13px">Highest AOV Format</strong>
+              <p style="font-size:12.5px">Lookbook readers convert at <b>₹3,058 AOV</b> — 6.4% higher than site average. Build 4 more thematic lookbooks per quarter.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g-4" style="margin-top:18px">
+        <div class="card"><div class="card-head"><h3>Lookbook Idea</h3><span class="chip pos">Q3 plan</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Monsoon Edit:</b> capitalise on June-Aug rain-friendly fabric searches.</p></div>
+        <div class="card"><div class="card-head"><h3>Lookbook Idea</h3><span class="chip pos">Festive</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Diwali Co-ord Edit</b> — ship Sept first week to ride searches.</p></div>
+        <div class="card"><div class="card-head"><h3>Lookbook Refresh</h3><span class="chip warn">Decay</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Tie-Dye Story</b> needs new hero shots — currently using SS25 imagery.</p></div>
+        <div class="card"><div class="card-head"><h3>Lookbook UX</h3><span class="chip info">Shoppable</span></div><p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55"><b>Hotspot CTAs</b> on lookbook images — pilot showed +32% PDP CTR.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       07 · ECOMMERCE SEO — sessions added everywhere
+       ========================================================= -->
+  <section class="section" id="ecom">
+    <div class="section-head">
+      <div class="eyebrow">Layer 07</div>
+      <h2>Ecommerce SEO Performance</h2>
+      <p>Category, collection, product handle and SKU-level economics from organic search. Sessions is shown alongside revenue and conversion in every view.</p>
+    </div>
+
+    <div class="grid g-2-1">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Organic Revenue by Category — MTD</h3><p>Sessions, orders and revenue across catalog</p></div>
+          <span class="chip navy">Top 8 categories</span>
+        </div>
+        <div class="chart-wrap tall"><canvas id="categoryBar"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Category SEO ROI</h3><p>Revenue ÷ SEO effort score</p></div>
+        <table class="table">
+          <thead><tr><th>Category</th><th class="num">Sessions</th><th class="num">ROI</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td><b>Co-ord Sets</b></td><td class="num">912</td><td class="num" style="color:var(--pos);font-weight:700">9.8×</td><td><span class="chip pos">▲ 41%</span></td></tr>
+            <tr><td><b>Dresses</b></td><td class="num">1,824</td><td class="num" style="color:var(--pos);font-weight:700">8.4×</td><td><span class="chip pos">▲ 22%</span></td></tr>
+            <tr><td><b>Tie-Dye</b></td><td class="num">312</td><td class="num" style="font-weight:600">7.1×</td><td><span class="chip pos">▲ 14%</span></td></tr>
+            <tr><td><b>Tops</b></td><td class="num">688</td><td class="num" style="font-weight:600">5.6×</td><td><span class="chip warn">→ flat</span></td></tr>
+            <tr><td><b>Shirts</b></td><td class="num">512</td><td class="num">4.2×</td><td><span class="chip neg">▼ 8%</span></td></tr>
+            <tr><td><b>Bottoms</b></td><td class="num">198</td><td class="num">2.8×</td><td><span class="chip neg">▼ 12%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Landing Page Efficiency Matrix</h3><p>X: Sessions · Y: Conversion · Marker: revenue tier</p></div>
+        </div>
+        <div class="matrix">
+          <div class="lbl q-tl">★ Hero pages</div>
+          <div class="lbl q-tr">⚡ Convert but small</div>
+          <div class="lbl q-bl">— Low priority</div>
+          <div class="lbl q-br">⚠ Leak — fix first</div>
+          <div class="pt" style="left:75%;top:20%"><span>/co-ord-sets</span></div>
+          <div class="pt" style="left:80%;top:28%;background:var(--navy-2)"><span>/dresses</span></div>
+          <div class="pt" style="left:62%;top:35%;background:var(--gold)"><span>/tops-shirts</span></div>
+          <div class="pt" style="left:88%;top:75%;background:var(--neg)"><span>/sky-blue-wrap-top</span></div>
+          <div class="pt" style="left:30%;top:18%;background:var(--pos)"><span>/rang-tie-dye</span></div>
+          <div class="pt" style="left:20%;top:60%"><span>/basics-shirts</span></div>
+          <div class="pt" style="left:55%;top:80%;background:var(--neg)"><span>/blush-pink-shirt</span></div>
+          <div class="pt" style="left:42%;top:50%"><span>/below-2000</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>High Traffic · Low CVR — Revenue Leaks</h3><span class="chip neg">Fix-first</span></div>
+        <table class="table">
+          <thead><tr><th>Page</th><th class="num">Sessions</th><th class="num">CVR</th><th>Diagnosis</th></tr></thead>
+          <tbody>
+            <tr><td class="truncate"><b>/products/sky-blue-wrap-top</b></td><td class="num">412</td><td class="num" style="color:var(--neg);font-weight:600">0.2%</td><td><span class="chip warn">PDP image quality</span></td></tr>
+            <tr><td class="truncate"><b>/collections/tops-shirts</b></td><td class="num">684</td><td class="num" style="color:var(--neg);font-weight:600">1.1%</td><td><span class="chip warn">No filter facets</span></td></tr>
+            <tr><td class="truncate"><b>/products/blush-pink-shirt</b></td><td class="num">209</td><td class="num" style="color:var(--neg);font-weight:600">0.3%</td><td><span class="chip neg">Out of stock var.</span></td></tr>
+            <tr><td class="truncate"><b>/blogs/news/crop-top</b></td><td class="num">986</td><td class="num" style="color:var(--warn);font-weight:600">1.4%</td><td><span class="chip info">Weak CTA</span></td></tr>
+            <tr><td class="truncate"><b>/pages/store-locator</b></td><td class="num">218</td><td class="num">N/A</td><td><span class="chip">Awareness only</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top 100 SKU table — scrollable, ~10 rows visible -->
+    <div style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Top Organic Products · SKU Level</h3><p>Sessions, orders, ASP and revenue per SKU — organic only · MTD. First 10 rows visible, scroll for the full top 100.</p></div>
+          <span class="chip navy">Source: GA4 item-level</span>
+        </div>
+        <div class="scroll-table sm">
+        <table class="table">
+          <thead><tr><th>#</th><th>SKU</th><th class="num">Sessions</th><th class="num">Orders</th><th class="num">ASP</th><th class="num">Revenue</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><b>Lemon Pie Co-ord – L</b></td><td class="num">14</td><td class="num">2</td><td class="num">₹2,299</td><td class="num">₹4,598</td></tr>
+            <tr><td>2</td><td><b>Sunny Floral Dress – FS</b></td><td class="num">12</td><td class="num">3</td><td class="num">₹1,613</td><td class="num">₹4,840</td></tr>
+            <tr><td>3</td><td><b>Lemon Pie Co-ord – M</b></td><td class="num">9</td><td class="num">2</td><td class="num">₹2,372</td><td class="num">₹4,744</td></tr>
+            <tr><td>4</td><td><b>Fennel Green Co-ord – M / Green</b></td><td class="num">8</td><td class="num">2</td><td class="num">₹2,282</td><td class="num">₹4,564</td></tr>
+            <tr><td>5</td><td><b>Lemon Yellow Embroidered Top – L</b></td><td class="num">8</td><td class="num">4</td><td class="num">₹806</td><td class="num">₹3,224</td></tr>
+            <tr><td>6</td><td><b>Vintage Wine Dress – M</b></td><td class="num">7</td><td class="num">2</td><td class="num">₹2,155</td><td class="num">₹4,310</td></tr>
+            <tr><td>7</td><td><b>Punch Pink Co-ord – S</b></td><td class="num">7</td><td class="num">2</td><td class="num">₹2,420</td><td class="num">₹4,840</td></tr>
+            <tr><td>8</td><td><b>Brass Yellow Co-ord – XL</b></td><td class="num">6</td><td class="num">2</td><td class="num">₹2,278</td><td class="num">₹4,555</td></tr>
+            <tr><td>9</td><td><b>Raspberry Weave Dress – M / Rose gold</b></td><td class="num">5</td><td class="num">2</td><td class="num">₹2,335</td><td class="num">₹4,669</td></tr>
+            <tr><td>10</td><td><b>Burnt Orange Dress – L</b></td><td class="num">5</td><td class="num">2</td><td class="num">₹1,806</td><td class="num">₹3,612</td></tr>
+            <tr><td>11</td><td><b>Burnt Orange Dress – XL</b></td><td class="num">5</td><td class="num">2</td><td class="num">₹1,615</td><td class="num">₹3,230</td></tr>
+            <tr><td>12</td><td><b>Tangerine Embroidered Top – XXL</b></td><td class="num">5</td><td class="num">3</td><td class="num">₹1,168</td><td class="num">₹3,505</td></tr>
+            <tr><td>13</td><td><b>Airy Blue Co-ord Set – L</b></td><td class="num">4</td><td class="num">2</td><td class="num">₹1,712</td><td class="num">₹3,424</td></tr>
+            <tr><td>14</td><td><b>Tangerine Embroidered Top – M</b></td><td class="num">4</td><td class="num">3</td><td class="num">₹1,129</td><td class="num">₹3,388</td></tr>
+            <tr><td>15</td><td><b>Sage Green Co-ord Set – S</b></td><td class="num">4</td><td class="num">2</td><td class="num">₹1,630</td><td class="num">₹3,261</td></tr>
+            <tr><td>16</td><td><b>Granola Yellow Dress – M / Yellow</b></td><td class="num">3</td><td class="num">2</td><td class="num">₹1,813</td><td class="num">₹3,625</td></tr>
+            <tr><td>17</td><td><b>Creamy Cocoa Oversized Dress – FS</b></td><td class="num">3</td><td class="num">2</td><td class="num">₹1,808</td><td class="num">₹3,617</td></tr>
+            <tr><td>18</td><td><b>Mono Check Shirt – FS</b></td><td class="num">3</td><td class="num">2</td><td class="num">₹1,075</td><td class="num">₹2,150</td></tr>
+            <tr><td>19</td><td><b>Maple Rust Smock Dress – L</b></td><td class="num">3</td><td class="num">1</td><td class="num">₹1,425</td><td class="num">₹1,425</td></tr>
+            <tr><td>20</td><td><b>Basil Green Weave Shirt – L</b></td><td class="num">3</td><td class="num">2</td><td class="num">₹1,130</td><td class="num">₹2,260</td></tr>
+            <tr><td>21</td><td><b>Dutch Blue Jacket With Dress – L</b></td><td class="num">3</td><td class="num">1</td><td class="num">₹2,265</td><td class="num">₹2,265</td></tr>
+            <tr><td>22</td><td><b>Blue Weave Dress With Top – XL</b></td><td class="num">3</td><td class="num">1</td><td class="num">₹2,175</td><td class="num">₹2,175</td></tr>
+            <tr><td>23</td><td><b>Biscotti Yellow Weave Dress – L</b></td><td class="num">3</td><td class="num">1</td><td class="num">₹1,473</td><td class="num">₹1,473</td></tr>
+            <tr><td>24</td><td><b>Maple Rust Smock Dress – XL</b></td><td class="num">3</td><td class="num">1</td><td class="num">₹1,645</td><td class="num">₹1,645</td></tr>
+            <tr><td>25</td><td><b>Maple Rust Smock Dress – 3XL</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,558</td><td class="num">₹1,558</td></tr>
+            <tr><td>26</td><td><b>Lemonade Yellow Dress – M</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,484</td><td class="num">₹1,484</td></tr>
+            <tr><td>27</td><td><b>Tan Brown Sleeveless Dress – L / Brown</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,309</td><td class="num">₹1,309</td></tr>
+            <tr><td>28</td><td><b>Tan Brown Sleeveless Dress – XL / Brown</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,297</td><td class="num">₹1,297</td></tr>
+            <tr><td>29</td><td><b>Navy Blue Peplum Top – M</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,180</td><td class="num">₹1,180</td></tr>
+            <tr><td>30</td><td><b>Khadi Essence Unisex Shirt – L</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,420</td><td class="num">₹1,420</td></tr>
+            <tr><td>31</td><td><b>Brown Peplum Top – M</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,150</td><td class="num">₹1,150</td></tr>
+            <tr><td>32</td><td><b>Yellow Embroidered Top – S</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,085</td><td class="num">₹1,085</td></tr>
+            <tr><td>33</td><td><b>Plum Color Dress – M</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,920</td><td class="num">₹1,920</td></tr>
+            <tr><td>34</td><td><b>Red Co-ord Set – S</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹2,180</td><td class="num">₹2,180</td></tr>
+            <tr><td>35</td><td><b>Khadi Shorts – M</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹980</td><td class="num">₹980</td></tr>
+            <tr><td>36</td><td><b>Sky Blue Wrap Top – M</b></td><td class="num">2</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>37</td><td><b>White Sunflower Crop Shirt – S</b></td><td class="num">2</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>38</td><td><b>Blush Pink Shirt – M</b></td><td class="num">2</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>39</td><td><b>Pastel Pink Top – S</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹920</td><td class="num">₹920</td></tr>
+            <tr><td>40</td><td><b>Sunny Dress – Free Size</b></td><td class="num">2</td><td class="num">1</td><td class="num">₹1,919</td><td class="num">₹1,919</td></tr>
+            <tr><td>41</td><td><b>Long Tie Dye Dress – L</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹2,180</td><td class="num">₹2,180</td></tr>
+            <tr><td>42</td><td><b>Raspberry Color Dress – M</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹1,840</td><td class="num">₹1,840</td></tr>
+            <tr><td>43</td><td><b>Pastel Mint Shirt – M</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹980</td><td class="num">₹980</td></tr>
+            <tr><td>44</td><td><b>Olive Co-ord Set – L</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹2,180</td><td class="num">₹2,180</td></tr>
+            <tr><td>45</td><td><b>Mustard Co-ord Set – S</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹2,200</td><td class="num">₹2,200</td></tr>
+            <tr><td>46</td><td><b>Coral Wrap Dress – M</b></td><td class="num">1</td><td class="num">1</td><td class="num">₹1,720</td><td class="num">₹1,720</td></tr>
+            <tr><td>47</td><td><b>Pista Green Shirt – L</b></td><td class="num">1</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>48</td><td><b>Ivory Cotton Co-ord – XL</b></td><td class="num">1</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>49</td><td><b>Charcoal Maxi Dress – M</b></td><td class="num">1</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td>50</td><td><b>Apricot Co-ord Set – M</b></td><td class="num">1</td><td class="num">0</td><td class="num">—</td><td class="num">₹0</td></tr>
+            <tr><td colspan="6" style="background:var(--surface-2);color:var(--ink-3);font-style:italic;text-align:center;font-size:11.5px">— Top 50 of 100 SKUs shown · scroll continues with positions 51–100 —</td></tr>
+            <tr style="background:var(--surface-2);font-weight:700"><td colspan="2">Top 100 Subtotal</td><td class="num">214</td><td class="num">68</td><td class="num">₹1,612</td><td class="num">₹1,09,640</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="scroll-hint">Scroll within the table to view all 100 SKUs ↓</div>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Under-Optimised High-Intent</h3><span class="chip warn">Action</span></div>
+        <table class="table">
+          <thead><tr><th>Keyword / Page</th><th class="num">Sessions</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><b>"dress under 2000"</b><div class="sub">pos 5 · 210 vol</div></td><td class="num">42</td><td>Add price filter</td></tr>
+            <tr><td><b>"basic shirts womens"</b><div class="sub">pos 6 · 390 vol</div></td><td class="num">58</td><td>Add PLP intro</td></tr>
+            <tr><td><b>"bottoms for women"</b><div class="sub">pos 6 · 2,400 vol</div></td><td class="num">86</td><td>Build category page</td></tr>
+            <tr><td><b>"airport dress for ladies"</b><div class="sub">pos 6 · 50 vol</div></td><td class="num">52</td><td>Refresh blog</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card tinted">
+        <div class="card-head"><h3>Inventory-Aware Insight</h3><span class="chip neg">9 stockouts</span></div>
+        <div style="font-size:12.5px;color:var(--ink-2);line-height:1.6;margin-top:6px">
+          <b style="color:var(--navy)">9 ranking products</b> are out of stock — losing <b style="color:var(--neg)">~₹38K/mo</b> in organic revenue. Top offenders: <i>Khadi Shorts (pos 2)</i>, <i>Brown Peplum Top (pos 2)</i>, <i>Plum Dress (pos 1)</i>. Trigger ops to restock or 301 redirect.
+        </div>
+        <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="chip neg">Khadi Shorts</span>
+          <span class="chip neg">Brown Peplum</span>
+          <span class="chip neg">Plum Dress</span>
+          <span class="chip neg">+6 more</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div><h3>Top Landing Pages — Product Handles &amp; Collections</h3><p>GSC impressions / clicks joined with GA4 sessions, orders and revenue · MTD. First 10 rows visible — scroll for the rest of the top 30.</p></div>
+        <span class="chip navy">GSC + GA4 joined</span>
+      </div>
+      <div class="scroll-table sm">
+      <table class="table">
+        <thead><tr><th>#</th><th>Page</th><th class="num">Impressions</th><th class="num">GSC Clicks</th><th class="num">GSC CTR</th><th class="num">Sessions</th><th class="num">Orders</th><th class="num">CVR</th><th class="num">Revenue</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="truncate">/collections/tops-shirts</td><td class="num">66,766</td><td class="num">483</td><td class="num">0.72%</td><td class="num">684</td><td class="num">8</td><td class="num">1.2%</td><td class="num">₹22,400</td></tr>
+          <tr><td>2</td><td class="truncate">/blogs/news/10-stylish-dresses-to-wear-in-goa</td><td class="num">46,356</td><td class="num">286</td><td class="num">0.62%</td><td class="num">412</td><td class="num">6</td><td class="num">1.5%</td><td class="num">₹18,200</td></tr>
+          <tr><td>3</td><td class="truncate">/collections/co-ord-sets</td><td class="num">40,599</td><td class="num">337</td><td class="num">0.83%</td><td class="num">512</td><td class="num">14</td><td class="num" style="color:var(--pos);font-weight:600">2.7%</td><td class="num">₹48,200</td></tr>
+          <tr><td>4</td><td class="truncate">/ (homepage)</td><td class="num">28,082</td><td class="num">2,917</td><td class="num" style="color:var(--pos);font-weight:600">10.39%</td><td class="num">1,124</td><td class="num">22</td><td class="num">2.0%</td><td class="num">₹68,400</td></tr>
+          <tr><td>5</td><td class="truncate">/collections/dresses</td><td class="num">23,551</td><td class="num">458</td><td class="num">1.94%</td><td class="num">624</td><td class="num">16</td><td class="num" style="color:var(--pos);font-weight:600">2.6%</td><td class="num">₹52,800</td></tr>
+          <tr><td>6</td><td class="truncate">/collections/new-arrivals</td><td class="num">17,414</td><td class="num">133</td><td class="num">0.76%</td><td class="num">218</td><td class="num">4</td><td class="num">1.8%</td><td class="num">₹14,200</td></tr>
+          <tr><td>7</td><td class="truncate">/blogs/news/how-to-wear-a-crop-top-for-every-body-type</td><td class="num">16,764</td><td class="num">28</td><td class="num" style="color:var(--neg);font-weight:600">0.17%</td><td class="num">86</td><td class="num">1</td><td class="num">1.2%</td><td class="num">₹3,200</td></tr>
+          <tr><td>8</td><td class="truncate">/products/sky-blue-wrap-top</td><td class="num">15,971</td><td class="num">6</td><td class="num" style="color:var(--neg);font-weight:600">0.04%</td><td class="num">42</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>9</td><td class="truncate">/pages/about-us</td><td class="num">15,322</td><td class="num">32</td><td class="num">0.21%</td><td class="num">68</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>10</td><td class="truncate">/products/white-sunlower-crop-shirt</td><td class="num">14,518</td><td class="num">22</td><td class="num" style="color:var(--neg);font-weight:600">0.15%</td><td class="num">48</td><td class="num">1</td><td class="num">2.1%</td><td class="num">₹1,840</td></tr>
+          <tr><td>11</td><td class="truncate">/blogs/news/airport-outfits-for-women-complete-guide</td><td class="num">14,229</td><td class="num">48</td><td class="num">0.34%</td><td class="num">126</td><td class="num">2</td><td class="num">1.6%</td><td class="num">₹6,800</td></tr>
+          <tr><td>12</td><td class="truncate">/products/sage-brown-co-ord-set-shorts-top</td><td class="num">13,203</td><td class="num">3</td><td class="num" style="color:var(--neg);font-weight:600">0.02%</td><td class="num">28</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>13</td><td class="truncate">/products/burnt-orange-dress</td><td class="num">9,972</td><td class="num">20</td><td class="num">0.20%</td><td class="num">52</td><td class="num">3</td><td class="num" style="color:var(--pos);font-weight:600">5.8%</td><td class="num">₹8,400</td></tr>
+          <tr><td>14</td><td class="truncate">/pages/store-locator</td><td class="num">9,867</td><td class="num">81</td><td class="num">0.82%</td><td class="num">128</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>15</td><td class="truncate">/products/blush-pink-shirt</td><td class="num">9,545</td><td class="num">2</td><td class="num" style="color:var(--neg);font-weight:600">0.02%</td><td class="num">22</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>16</td><td class="truncate">/products/navy-blue-peplum-top</td><td class="num">8,547</td><td class="num">6</td><td class="num">0.07%</td><td class="num">34</td><td class="num">1</td><td class="num">2.9%</td><td class="num">₹2,180</td></tr>
+          <tr><td>17</td><td class="truncate">/products/khadi-essence-unisex-shirt</td><td class="num">7,528</td><td class="num">3</td><td class="num">0.04%</td><td class="num">26</td><td class="num">0</td><td class="num">0.0%</td><td class="num">₹0</td></tr>
+          <tr><td>18</td><td class="truncate">/products/lemon-yellow-embroidered-top</td><td class="num">7,429</td><td class="num">10</td><td class="num">0.13%</td><td class="num">48</td><td class="num">4</td><td class="num" style="color:var(--pos);font-weight:600">8.3%</td><td class="num">₹3,224</td></tr>
+          <tr><td>19</td><td class="truncate">/collections/basics-shirts</td><td class="num">6,820</td><td class="num">58</td><td class="num">0.85%</td><td class="num">96</td><td class="num">2</td><td class="num">2.1%</td><td class="num">₹4,400</td></tr>
+          <tr><td>20</td><td class="truncate">/collections/bottoms</td><td class="num">5,940</td><td class="num">86</td><td class="num">1.45%</td><td class="num">142</td><td class="num">3</td><td class="num">2.1%</td><td class="num">₹6,800</td></tr>
+          <tr><td>21</td><td class="truncate">/products/sunny-floral-dress</td><td class="num">5,418</td><td class="num">42</td><td class="num">0.78%</td><td class="num">96</td><td class="num">5</td><td class="num" style="color:var(--pos);font-weight:600">5.2%</td><td class="num">₹9,800</td></tr>
+          <tr><td>22</td><td class="truncate">/products/lemon-pie-co-ord-set</td><td class="num">4,820</td><td class="num">38</td><td class="num">0.79%</td><td class="num">82</td><td class="num">4</td><td class="num" style="color:var(--pos);font-weight:600">4.9%</td><td class="num">₹8,400</td></tr>
+          <tr><td>23</td><td class="truncate">/products/creamy-cocoa-oversized-dress</td><td class="num">4,210</td><td class="num">28</td><td class="num">0.66%</td><td class="num">68</td><td class="num">2</td><td class="num">2.9%</td><td class="num">₹3,617</td></tr>
+          <tr><td>24</td><td class="truncate">/blogs/news/cotton-co-ord-style-guide</td><td class="num">3,940</td><td class="num">48</td><td class="num">1.22%</td><td class="num">112</td><td class="num">2</td><td class="num">1.8%</td><td class="num">₹4,800</td></tr>
+          <tr><td>25</td><td class="truncate">/products/fennel-green-co-ord-set</td><td class="num">3,648</td><td class="num">24</td><td class="num">0.66%</td><td class="num">58</td><td class="num">2</td><td class="num">3.4%</td><td class="num">₹4,564</td></tr>
+          <tr><td>26</td><td class="truncate">/collections/rang-tie-dye</td><td class="num">3,412</td><td class="num">68</td><td class="num">1.99%</td><td class="num">142</td><td class="num">3</td><td class="num">2.1%</td><td class="num">₹6,200</td></tr>
+          <tr><td>27</td><td class="truncate">/products/tangerine-embroidered-top</td><td class="num">3,180</td><td class="num">22</td><td class="num">0.69%</td><td class="num">48</td><td class="num">2</td><td class="num">4.2%</td><td class="num">₹3,505</td></tr>
+          <tr><td>28</td><td class="truncate">/products/brass-yellow-co-ord-set</td><td class="num">2,840</td><td class="num">18</td><td class="num">0.63%</td><td class="num">42</td><td class="num">2</td><td class="num">4.8%</td><td class="num">₹4,555</td></tr>
+          <tr><td>29</td><td class="truncate">/blogs/news/airport-outfits-summer-2026</td><td class="num">2,640</td><td class="num">32</td><td class="num">1.21%</td><td class="num">68</td><td class="num">1</td><td class="num">1.5%</td><td class="num">₹2,180</td></tr>
+          <tr><td>30</td><td class="truncate">/products/punch-pink-co-ord</td><td class="num">2,418</td><td class="num">16</td><td class="num">0.66%</td><td class="num">38</td><td class="num">2</td><td class="num">5.3%</td><td class="num">₹4,840</td></tr>
+          <tr style="background:var(--surface-2);font-weight:700"><td colspan="2">Top 30 Subtotal</td><td class="num">419,949</td><td class="num">5,415</td><td class="num">1.29%</td><td class="num">5,294</td><td class="num">114</td><td class="num">2.15%</td><td class="num">₹3,21,705</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="scroll-hint">Scroll within the table to view top 30 ↓</div>
+    </div>
+
+    <!-- MICROSOFT CLARITY — not connected -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div><h3>Microsoft Clarity · Friction Signals on Top PDPs &amp; Collections</h3><p>Behavioural signals — rage clicks, dead clicks, scroll depth.</p></div>
+        <span class="chip info">Microsoft Clarity</span>
+      </div>
+      <div class="empty-state">
+        <div class="es-icon">⌧</div>
+        <p class="es-title">Please connect Microsoft Clarity to view behavioral insights</p>
+        <p class="es-msg">Once Microsoft Clarity is connected for this workspace, this card will surface rage clicks, dead clicks, scroll depth and frustration signals on the top organic landing pages.</p>
+        <div class="es-cta">Connect via Windsor.ai → Microsoft Clarity</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       08 · AUDIENCE INTEL
+       ========================================================= -->
+  <section class="section" id="audience">
+    <div class="section-head">
+      <div class="eyebrow">Layer 08</div>
+      <h2>Audience &amp; Behavior Intelligence</h2>
+      <p>Who buys from organic, and who doesn't. Device, geography and cohort signals to inform CRO and lifecycle.</p>
+    </div>
+
+    <div class="grid g-3">
+      <div class="card">
+        <div class="card-head"><h3>Device Split · Sessions</h3><span class="chip">Mobile-first</span></div>
+        <div class="chart-wrap"><canvas id="deviceDonut"></canvas></div>
+        <div style="font-size:12.5px;color:var(--ink-3);margin-top:10px;line-height:1.6">
+          <b style="color:var(--ink-1)">80% of organic orders</b> from mobile. Mobile CVR (<b>2.5%</b>) beats desktop (<b>2.1%</b>). Stay mobile-first.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Device · Conversion &amp; Revenue</h3></div>
+        <table class="table">
+          <thead><tr><th>Device</th><th class="num">Sessions</th><th class="num">CVR</th><th class="num">Orders</th><th class="num">Revenue</th></tr></thead>
+          <tbody>
+            <tr><td><b>Mobile</b></td><td class="num">4,012</td><td class="num">2.5%</td><td class="num">94</td><td class="num">₹271,200</td></tr>
+            <tr><td><b>Desktop</b></td><td class="num">1,088</td><td class="num">2.1%</td><td class="num">23</td><td class="num">₹66,800</td></tr>
+            <tr><td><b>Tablet</b></td><td class="num">29</td><td class="num">3.4%</td><td class="num">1</td><td class="num">₹978</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Engagement Heatmap</h3><p>Top 3 collections · 7 days</p></div>
+        <div class="heat" style="margin-top:8px">
+          <div class="cell" style="background:rgba(9,60,118,.85);color:#FFFFF0">Mon</div>
+          <div class="cell" style="background:rgba(9,60,118,.65);color:#FFFFF0">Tue</div>
+          <div class="cell" style="background:rgba(9,60,118,.45)">Wed</div>
+          <div class="cell" style="background:rgba(9,60,118,.35)">Thu</div>
+          <div class="cell" style="background:rgba(9,60,118,.55);color:#FFFFF0">Fri</div>
+          <div class="cell" style="background:rgba(9,60,118,.92);color:#FFFFF0">Sat</div>
+          <div class="cell" style="background:rgba(9,60,118,.78);color:#FFFFF0">Sun</div>
+          <div class="cell" style="background:rgba(22,89,173,.7);color:#FFFFF0">M</div>
+          <div class="cell" style="background:rgba(22,89,173,.5)">T</div>
+          <div class="cell" style="background:rgba(22,89,173,.3)">W</div>
+          <div class="cell" style="background:rgba(22,89,173,.45)">T</div>
+          <div class="cell" style="background:rgba(22,89,173,.65);color:#FFFFF0">F</div>
+          <div class="cell" style="background:rgba(22,89,173,.85);color:#FFFFF0">S</div>
+          <div class="cell" style="background:rgba(22,89,173,.75);color:#FFFFF0">S</div>
+          <div class="cell" style="background:rgba(184,128,26,.55)">M</div>
+          <div class="cell" style="background:rgba(184,128,26,.45)">T</div>
+          <div class="cell" style="background:rgba(184,128,26,.35)">W</div>
+          <div class="cell" style="background:rgba(184,128,26,.55)">T</div>
+          <div class="cell" style="background:rgba(184,128,26,.78);color:#FFFFF0">F</div>
+          <div class="cell" style="background:rgba(184,128,26,.92);color:#FFFFF0">S</div>
+          <div class="cell" style="background:rgba(184,128,26,.7);color:#FFFFF0">S</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:8px;font-weight:600">
+          <span>Co-ord Sets</span><span>Dresses</span><span>Tops-Shirts</span>
+        </div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.55"><b style="color:var(--ink-1)">Weekend peaks</b> across all three. Ship blog/social pushes Friday evening for max amplification.</div>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><div><h3>City-Level Performance · Organic</h3><p>Top 8 metros · sessions, orders, CVR, revenue</p></div><span class="chip pos">Bengaluru #1</span></div>
+        <table class="table">
+          <thead><tr><th>City</th><th class="num">Sessions</th><th class="num">Orders</th><th class="num">CVR</th><th class="num">Revenue</th><th>Strength</th></tr></thead>
+          <tbody>
+            <tr><td><b>Bengaluru</b></td><td class="num">1,124</td><td class="num">38</td><td class="num" style="color:var(--pos);font-weight:700">3.4%</td><td class="num">₹98,200</td><td><div class="mini-bar"><i style="width:100%"></i></div></td></tr>
+            <tr><td><b>Mumbai</b></td><td class="num">812</td><td class="num">22</td><td class="num">2.7%</td><td class="num">₹62,400</td><td><div class="mini-bar"><i style="width:64%"></i></div></td></tr>
+            <tr><td><b>Delhi NCR</b></td><td class="num">748</td><td class="num">19</td><td class="num">2.5%</td><td class="num">₹54,800</td><td><div class="mini-bar"><i style="width:56%"></i></div></td></tr>
+            <tr><td><b>Hyderabad</b></td><td class="num">486</td><td class="num">14</td><td class="num">2.9%</td><td class="num">₹38,200</td><td><div class="mini-bar"><i style="width:40%"></i></div></td></tr>
+            <tr><td><b>Pune</b></td><td class="num">412</td><td class="num">9</td><td class="num">2.2%</td><td class="num">₹24,800</td><td><div class="mini-bar"><i style="width:25%"></i></div></td></tr>
+            <tr><td><b>Chennai</b></td><td class="num">381</td><td class="num">6</td><td class="num" style="color:var(--warn);font-weight:600">1.6%</td><td class="num">₹18,200</td><td><div class="mini-bar"><i style="width:18%"></i></div></td></tr>
+            <tr><td><b>Kolkata</b></td><td class="num">218</td><td class="num">4</td><td class="num">1.8%</td><td class="num">₹11,400</td><td><div class="mini-bar"><i style="width:12%"></i></div></td></tr>
+            <tr><td><b>Ahmedabad</b></td><td class="num">196</td><td class="num">3</td><td class="num">1.5%</td><td class="num">₹8,600</td><td><div class="mini-bar"><i style="width:9%"></i></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Cohort Retention · Organic Acquisition</h3><p>Repeat purchase rate by cohort month</p></div>
+        <div class="chart-wrap"><canvas id="cohort"></canvas></div>
+        <div style="font-size:12.5px;color:var(--ink-3);margin-top:10px;line-height:1.6"><b style="color:var(--ink-1)">Mar 2026</b> cohort retains <b style="color:var(--pos)">38%</b> at day-60 — best in 6 months. Driver: co-ord discovery via "Goa dresses" blog. Lifecycle email series should mirror this journey.</div>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Best Converting Segment</h3><span class="chip pos">★</span></div>
+        <div style="font-size:16px;font-weight:700;color:var(--navy);margin-top:6px">Returning · Mobile · Bengaluru</div>
+        <div style="font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.55">CVR <b style="color:var(--pos)">5.8%</b> · AOV <b>₹3,210</b> · 28% of organic revenue from 9% of sessions.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Weakest Segment</h3><span class="chip neg">⚠</span></div>
+        <div style="font-size:16px;font-weight:700;color:var(--navy);margin-top:6px">New · Desktop · Chennai</div>
+        <div style="font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.55">CVR <b style="color:var(--neg)">0.8%</b>. Possible drivers: regional shipping confusion, language preference. Test Tamil microcopy or localised page.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Highest Revenue Geography</h3><span class="chip">South India</span></div>
+        <div style="font-size:16px;font-weight:700;color:var(--navy);margin-top:6px">Karnataka · Maharashtra · Telangana</div>
+        <div style="font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.55"><b>54%</b> of organic revenue from 3 states. Localised PR + creator collabs in Bengaluru = high-ROI bet.</div>
+      </div>
+    </div>
+
+    <!-- MICROSOFT CLARITY · BEHAVIOURAL DEEP DIVE — not connected -->
+    <div class="section-head" style="margin-top:32px;margin-bottom:14px">
+      <div class="eyebrow">Microsoft Clarity · Behavioural Signals</div>
+      <h2 style="font-size:18px">How visitors actually interact with the site</h2>
+      <p>Click maps, scroll depth, session recordings and frustration signals from Microsoft Clarity. Sampled across organic landing pages.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Microsoft Clarity · Behavioural Insights</h3><p>Heatmaps, scroll depth, rage clicks, dead clicks and session recordings.</p></div>
+        <span class="chip info">Microsoft Clarity</span>
+      </div>
+      <div class="empty-state" style="min-height:260px">
+        <div class="es-icon">⌧</div>
+        <p class="es-title">Please connect Microsoft Clarity to view behavioral insights</p>
+        <p class="es-msg">Once Microsoft Clarity is connected for this workspace, this section will surface click maps, scroll-depth charts per landing page, frustration signals, top click hotspots and a Clarity → Action recommendation map.</p>
+        <div class="es-cta">Connect via Windsor.ai → Microsoft Clarity</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       09 · SEO vs PAID
+       ========================================================= -->
+  <section class="section" id="paid">
+    <div class="section-head">
+      <div class="eyebrow">Layer 09</div>
+      <h2>SEO vs Paid Media Intelligence</h2>
+      <p>Spend allocation, channel efficiency, brand-keyword cannibalisation, budget reallocation opportunity.</p>
+    </div>
+
+    <!-- SPEND KPIs · MTD -->
+    <div class="card" style="margin-bottom:14px;background:var(--surface-2)">
+      <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:8px">Paid Media Spend · MTD 1–21 May 2026</div>
+      <div class="kpi-grid c4">
+        <div class="kpi"><div class="lbl">Meta Spend<span class="delta up">+21.9%</span></div><div class="val">₹24.0 L</div><div class="sub">₹24,01,974 · 97.8% of paid</div></div>
+        <div class="kpi"><div class="lbl">Google Spend<span class="delta up">+511.4%</span></div><div class="val">₹53.8 K</div><div class="sub">₹53,755 · 2.2% of paid</div></div>
+        <div class="kpi"><div class="lbl">Total Paid Spend<span class="delta up">+24.0%</span></div><div class="val">₹24.6 L</div><div class="sub">₹24,55,729 MTD</div></div>
+        <div class="kpi"><div class="lbl">Blended CPS<span class="delta up">+15.9%</span></div><div class="val">₹7.5</div><div class="sub">Spend / total sessions</div></div>
+      </div>
+    </div>
+
+    <!-- GOOGLE ADS BREAKDOWN BY CAMPAIGN TYPE -->
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <div><h3>Google Ads — Spend by Campaign Type · MTD</h3><p>Spend, revenue, ROAS and order share across PMax, Search, Shopping, Discovery and Display</p></div>
+        <span class="chip navy">Source: Google Ads</span>
+      </div>
+      <table class="table">
+        <thead><tr><th>Campaign Type</th><th class="num">Spend</th><th class="num">Spend Share</th><th class="num">Revenue</th><th class="num">Rev Share</th><th class="num">CTR</th><th class="num">CPC</th><th class="num">Orders</th><th class="num">ROAS</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Performance Max</b><div class="sub">Smart bidding across all inventory</div></td>
+            <td class="num">₹28,643</td><td class="num">53.3%</td>
+            <td class="num">₹1,15,898</td><td class="num">46.2%</td>
+            <td class="num">3.7%</td><td class="num">₹5.3</td>
+            <td class="num">46</td>
+            <td class="num"><b style="color:var(--pos)">4.0</b></td>
+          </tr>
+          <tr>
+            <td><b>Search</b><div class="sub">Brand + non-brand keywords</div></td>
+            <td class="num">₹23,714</td><td class="num">44.1%</td>
+            <td class="num">₹1,35,165</td><td class="num">53.8%</td>
+            <td class="num" style="color:var(--pos);font-weight:600">21.2%</td><td class="num">₹7.5</td>
+            <td class="num">53</td>
+            <td class="num"><b style="color:var(--pos)">5.7</b></td>
+          </tr>
+          <tr>
+            <td><b>Shopping</b><div class="sub">Free + paid product listings</div></td>
+            <td class="num">₹1,398</td><td class="num">2.6%</td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">1.1%</td><td class="num">₹38.8</td>
+            <td class="num">0</td>
+            <td class="num"><b style="color:var(--neg)">0.0</b></td>
+          </tr>
+          <tr>
+            <td><b>Discovery</b><div class="sub">Audience-targeted Google feeds</div></td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">—</td><td class="num">—</td>
+            <td class="num">0</td>
+            <td class="num">—</td>
+          </tr>
+          <tr>
+            <td><b>Display / GDN</b><div class="sub">Visual remarketing inventory</div></td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">—</td><td class="num">—</td>
+            <td class="num">0</td>
+            <td class="num">—</td>
+          </tr>
+          <tr>
+            <td><b>YouTube / Video</b><div class="sub">Pre-roll + bumper</div></td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">₹0</td><td class="num">0.0%</td>
+            <td class="num">—</td><td class="num">—</td>
+            <td class="num">0</td>
+            <td class="num">—</td>
+          </tr>
+          <tr style="background:var(--surface-2);font-weight:700">
+            <td>Grand Total</td>
+            <td class="num">₹53,755</td><td class="num">100%</td>
+            <td class="num">₹2,51,063</td><td class="num">100%</td>
+            <td class="num">5.2%</td><td class="num">₹6.2</td>
+            <td class="num">99</td>
+            <td class="num">4.7</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SEARCH MATCH-TYPE BREAKDOWN -->
+    <div class="grid g-2" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head"><h3>Google Search — by Match Type</h3><p>Where the budget actually clears</p></div>
+        <table class="table">
+          <thead><tr><th>Match Type</th><th class="num">Spend</th><th class="num">Share</th><th class="num">Revenue</th><th class="num">Orders</th><th class="num">ROAS</th></tr></thead>
+          <tbody>
+            <tr><td><b>Exact</b></td><td class="num">₹16,128</td><td class="num">29.9%</td><td class="num">₹1,21,453</td><td class="num">50</td><td class="num" style="color:var(--pos);font-weight:600">7.5</td></tr>
+            <tr><td><b>Phrase</b></td><td class="num">₹5,083</td><td class="num">9.5%</td><td class="num">₹7,140</td><td class="num">2</td><td class="num" style="color:var(--neg);font-weight:600">1.4</td></tr>
+            <tr><td><b>Broad</b></td><td class="num">₹3,748</td><td class="num">7.0%</td><td class="num">₹6,573</td><td class="num">1</td><td class="num">1.8</td></tr>
+            <tr style="background:var(--surface-2);font-weight:700"><td>Search Total</td><td class="num">₹24,959</td><td class="num">46.4%</td><td class="num">₹1,35,165</td><td class="num">53</td><td class="num">5.4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Top Search Keywords · Spend</h3></div>
+        <table class="table">
+          <thead><tr><th>Keyword</th><th class="num">Spend</th><th class="num">Revenue</th><th class="num">Orders</th><th class="num">ROAS</th></tr></thead>
+          <tbody>
+            <tr><td><b>babli</b></td><td class="num">₹15,326</td><td class="num">₹92,306</td><td class="num">39</td><td class="num">6.0</td></tr>
+            <tr><td><b>babli in</b></td><td class="num">₹3,749</td><td class="num">₹23,011</td><td class="num">6</td><td class="num">6.1</td></tr>
+            <tr><td><b>babli clothing</b></td><td class="num">₹1,870</td><td class="num">₹7,355</td><td class="num">3</td><td class="num">3.9</td></tr>
+            <tr><td><b>babli dress</b></td><td class="num">₹1,619</td><td class="num">₹9,835</td><td class="num">3</td><td class="num">6.1</td></tr>
+            <tr><td><b>babli online shopping</b></td><td class="num">₹959</td><td class="num">₹240</td><td class="num">1</td><td class="num" style="color:var(--neg);font-weight:600">0.3</td></tr>
+            <tr><td><b>babli clothes</b></td><td class="num">₹39</td><td class="num">₹2,418</td><td class="num">1</td><td class="num" style="color:var(--pos);font-weight:600">61.7</td></tr>
+            <tr style="background:var(--surface-2);font-weight:700"><td>Subtotal · Brand</td><td class="num">₹23,562</td><td class="num">₹1,35,165</td><td class="num">53</td><td class="num">5.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g-2-1" style="margin-top:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Paid + Organic Keyword Overlap</h3><p>Where paid is buying clicks the site already owns organically</p></div>
+          <span class="chip neg">₹22.6K wasted</span>
+        </div>
+        <table class="table">
+          <thead><tr><th>Keyword</th><th class="num">Paid Spend</th><th class="num">Paid ROAS</th><th class="num">Organic Pos</th><th>Recommendation</th></tr></thead>
+          <tbody>
+            <tr><td><b>babli</b></td><td class="num">₹15,326</td><td class="num">6.0</td><td class="num" style="color:var(--pos);font-weight:700">#1</td><td><span class="chip neg">Reduce 70%</span></td></tr>
+            <tr><td><b>babli in</b></td><td class="num">₹3,749</td><td class="num">6.1</td><td class="num" style="color:var(--pos);font-weight:700">#1</td><td><span class="chip neg">Pause</span></td></tr>
+            <tr><td><b>babli clothing</b></td><td class="num">₹1,870</td><td class="num">3.9</td><td class="num" style="color:var(--pos);font-weight:700">#1</td><td><span class="chip neg">Pause</span></td></tr>
+            <tr><td><b>babli dress</b></td><td class="num">₹1,619</td><td class="num">6.1</td><td class="num" style="color:var(--pos);font-weight:700">#1</td><td><span class="chip warn">Reduce 50%</span></td></tr>
+            <tr><td><b>babli fashion</b></td><td class="num">₹980</td><td class="num">4.4</td><td class="num" style="color:var(--pos);font-weight:700">#1</td><td><span class="chip neg">Pause</span></td></tr>
+            <tr><td><b>cotton co ord set</b></td><td class="num">—</td><td class="num">—</td><td class="num">#8</td><td><span class="chip pos">Bid here</span></td></tr>
+            <tr><td><b>indo western dress</b></td><td class="num">—</td><td class="num">—</td><td class="num">#17</td><td><span class="chip pos">PMax test</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Channel Efficiency · Radar</h3></div>
+        <div class="chart-wrap"><canvas id="effRadar"></canvas></div>
+        <div style="margin-top:14px;font-size:12.5px;color:var(--ink-3);line-height:1.6">
+          Organic outperforms paid on <b style="color:var(--ink-1)">AOV, CVR and CAC</b>. Paid wins on <b style="color:var(--ink-1)">volume and speed</b>. Implication: bid the gap — non-brand commercial intent terms not yet ranked.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout gold" style="margin-top:18px">
+      <div class="callout-mark">Reallocate</div>
+      <div class="callout-body">
+        <strong>₹16K/month can be redirected from brand defence to non-brand growth — without losing brand share.</strong>
+        <p>Of <b>₹53.7K</b> Google Ads spend in May MTD, <b>42% (₹22.6K)</b> targets keywords already ranking #1 organically. Reduce brand bid to defensive minimum, redirect <b>~₹16K/mo</b> to non-brand search terms where Babli is page-2 (cotton dresses for women, indo western dress, summer dresses india). Expected blended ROAS lift: <b>+0.9 points</b> to <b>4.6×</b>. Annualised: <b>~₹14.2L additional revenue</b> at flat spend.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       10 · AI INSIGHTS
+       ========================================================= -->
+  <section class="section" id="ai">
+    <div class="section-head">
+      <div class="eyebrow">Layer 10</div>
+      <h2>Automated GH Insight</h2>
+      <p>Anomalies, opportunities and risk alerts surfaced continuously across every layer of the report. Includes SEMrush AI Visibility tracking for LLM-driven search.</p>
+    </div>
+
+    <!-- SEMRUSH AI VISIBILITY — empty-state cards, ready for live integration -->
+    <div class="section-head" style="margin-top:6px;margin-bottom:14px">
+      <div class="eyebrow" style="color:var(--gold)">SEMrush · AI Visibility</div>
+      <h2 style="font-size:18px">Visibility in LLM &amp; AI search results</h2>
+      <p>Where Babli appears in ChatGPT, Perplexity, Gemini and other LLM-driven search experiences. Powered by SEMrush AI Visibility tracking.</p>
+    </div>
+
+    <div class="kpi-grid c3" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+      <div class="kpi">
+        <div class="lbl">AI Visibility Score<span style="font-weight:400;color:var(--ink-4);font-size:10px">SEMrush</span></div>
+        <div class="val" style="color:var(--ink-3);font-weight:600;font-size:14px;margin-top:14px">SEMrush AI Visibility data not available</div>
+        <div class="sub" style="font-style:italic">Connect SEMrush AI Visibility add-on to populate</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">AI Citation Share<span style="font-weight:400;color:var(--ink-4);font-size:10px">SEMrush</span></div>
+        <div class="val" style="color:var(--ink-3);font-weight:600;font-size:14px;margin-top:14px">SEMrush AI Visibility data not available</div>
+        <div class="sub" style="font-style:italic">% of AI answers citing Babli vs competitors</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">AI Search Mentions<span style="font-weight:400;color:var(--ink-4);font-size:10px">SEMrush</span></div>
+        <div class="val" style="color:var(--ink-3);font-weight:600;font-size:14px;margin-top:14px">SEMrush AI Visibility data not available</div>
+        <div class="sub" style="font-style:italic">Number of unique AI-search mentions</div>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>LLM Visibility Trend</h3><p>Visibility across ChatGPT, Perplexity, Gemini, Claude over time.</p></div>
+          <span class="chip info">SEMrush AI</span>
+        </div>
+        <div class="empty-state">
+          <div class="es-icon">⌧</div>
+          <p class="es-title">SEMrush AI Visibility data not available</p>
+          <p class="es-msg">Activate the SEMrush AI Visibility add-on for this domain to populate the trend chart.</p>
+          <div class="es-cta">Connect via SEMrush API</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>AI Competitor Visibility</h3><p>How Babli ranks against competitors inside LLM answers.</p></div>
+          <span class="chip info">SEMrush AI</span>
+        </div>
+        <div class="empty-state">
+          <div class="es-icon">⌧</div>
+          <p class="es-title">SEMrush AI Visibility data not available</p>
+          <p class="es-msg">Competitor share-of-voice in LLM answers will appear here once data is connected.</p>
+          <div class="es-cta">Connect via SEMrush API</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>AI Referral Opportunity Keywords</h3><p>Queries where Babli is missing from AI answers but ranks organically.</p></div>
+          <span class="chip info">SEMrush AI</span>
+        </div>
+        <div class="empty-state">
+          <div class="es-icon">⌧</div>
+          <p class="es-title">SEMrush AI Visibility data not available</p>
+          <p class="es-msg">Opportunity keyword list will populate once SEMrush AI Visibility is connected.</p>
+          <div class="es-cta">Connect via SEMrush API</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-2">
+      <div>
+        <div class="anomaly pos"><div class="icn">▲</div><div><b>Co-ord Sets cluster climbing.</b> 5 keywords moved from positions 14-20 → 8-10 in 14 days. Driver: PDP image quality refresh on May 8. Capture: add internal links from Goa Dresses blog + create "Co-ord for Office" article. Estimated incremental: <b>₹84K/mo</b>.</div></div>
+        <div class="anomaly neg"><div class="icn">▼</div><div><b>Site CTR fell -10.5%</b> despite +9.3% impressions. Root cause: Tops-Shirts collection (66K impressions, 0.72% CTR) has identical meta title to homepage. Rewrite to "Cotton Tops &amp; Shirts for Women | Buy Online — Babli". Est. recovery: <b>+482 clicks/mo</b>.</div></div>
+        <div class="anomaly warn"><div class="icn">!</div><div><b>Khadi Shorts ranking risk.</b> Page out of stock for 9 days. Rank dropped from #2 → #5 on "khadi shorts" (170 vol). Either restock by May 25 or 301 to /collections/bottoms to preserve link equity.</div></div>
+        <div class="anomaly info"><div class="icn">i</div><div><b>Returning organic users convert 2.4× new.</b> Set up GA4 audience "Organic Returning" and trigger lifecycle email with co-ord/dress recommendations 7 days post-first-visit. Projected impact: <b>+₹28K/mo</b>.</div></div>
+        <div class="anomaly pos"><div class="icn">▲</div><div><b>AI Search referrers detected.</b> 29 sessions from Perplexity, ChatGPT and Gemini in May MTD (vs 12 in April). Add LLMs.txt and ensure structured FAQ schema on top 20 blog posts.</div></div>
+      </div>
+      <div>
+        <div class="anomaly neg"><div class="icn">▼</div><div><b>Cannibalization on "tie dye dress".</b> /collections/rang-tie-dye (#2) competing with /products/tie-dye-pink-maxi (#11). Set canonical to collection or differentiate intent. Currently bleeding <b>~₹6K/mo</b>.</div></div>
+        <div class="anomaly warn"><div class="icn">!</div><div><b>Mobile bounce uptick</b> on /collections/below-2000 (+12pp). Hero image weight 480KB — compress to &lt;120KB. LCP currently 3.1s on slow 4G. Expected uplift: <b>+18% CVR on this LP</b>.</div></div>
+        <div class="anomaly info"><div class="icn">i</div><div><b>Paid CPC spike +245%.</b> Google search auction pressure on non-brand. Build organic page for "indo western dress" (12,100 vol) — currently page-2 — to reduce paid dependency on next campaign cycle.</div></div>
+        <div class="anomaly pos"><div class="icn">▲</div><div><b>Featured snippet captured</b> on "what to wear in goa" overnight. Track CTR vs avg position over next 14 days; replicate format on "airport outfit ideas" (1,300 vol).</div></div>
+        <div class="anomaly warn"><div class="icn">!</div><div><b>42 orphan pages have GSC clicks.</b> No internal links pointing to them. Add at least 3 contextual internal links each — quick win across content team. Est. <b>+₹22K/mo</b>.</div></div>
+      </div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:18px">
+      <div class="callout">
+        <div class="callout-mark">Why · Rev ↑</div>
+        <div class="callout-body">
+          <strong>Why revenue grew</strong>
+          <p>Revenue +35.5% on +15.9% sessions = 2.3× quality multiplier. Driven by (a) Co-ord ranking improvements on high-AOV terms and (b) returning-user CVR 3.6% vs new 1.5%. Composition of traffic shifted toward more commercially mature users.</p>
+        </div>
+      </div>
+      <div class="callout warn">
+        <div class="callout-mark">Why · CTR ↓</div>
+        <div class="callout-body">
+          <strong>Why CTR dropped</strong>
+          <p>9.3% more impressions met -10.5% CTR. Triangulation: titles on Tops-Shirts &amp; Crop-Top blog have not been updated in 8 months, while SERP has shifted to year-mentions and numeric lists. Decay is a copywriting failure, not a ranking one.</p>
+        </div>
+      </div>
+      <div class="callout gold">
+        <div class="callout-mark">Next · 1 move</div>
+        <div class="callout-body">
+          <strong>If you do one thing this week</strong>
+          <p>Ship Product schema across <b>2,798 PDPs</b>. Single Liquid template change, ~4h engineering effort, ~₹62K/mo expected lift from rich-result CTR. Highest ROI single fix on the board.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       11 · ACTION ENGINE
+       ========================================================= -->
+  <section class="section" id="tasks">
+    <div class="section-head">
+      <div class="eyebrow">Layer 11</div>
+      <h2>SEO Task Prioritisation Engine</h2>
+      <p>Sprint-ready tasks scored by impact ÷ effort. Each carries projected sessions, revenue and difficulty.</p>
+    </div>
+
+    <div style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;color:var(--navy);font-weight:700">High Impact</h3>
+        <span style="font-size:12.5px;color:var(--ink-3)">Combined uplift: <b style="color:var(--pos)">+₹1.46L/mo</b></span>
+      </div>
+
+      <div class="task">
+        <div class="sq">T1</div>
+        <div>
+          <div class="title">Ship Product schema across 2,798 PDPs</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Single-template change in Shopify Liquid. Adds price, availability, review stars to SERP rich results.</div>
+          <div class="meta"><span>Owner: <b>Engineering</b></span><span>Effort: <b>4h</b></span><span>Type: <b>Technical</b></span><span>Expected: <b style="color:var(--pos)">+₹62K/mo · +18% CTR</b></span></div>
+        </div>
+        <div class="impact"><div class="score">94</div><span class="chip neg">CRITICAL</span></div>
+      </div>
+
+      <div class="task">
+        <div class="sq">T2</div>
+        <div>
+          <div class="title">Rewrite meta titles on 6 high-impression / low-CTR pages</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Sky-blue wrap top, crop-top blog, sage-brown co-ord, blush-pink shirt, about-us, white-sunflower top. Add numerics, year, benefit.</div>
+          <div class="meta"><span>Owner: <b>Content</b></span><span>Effort: <b>3h</b></span><span>Type: <b>Copy</b></span><span>Expected: <b style="color:var(--pos)">+1,968 clicks/mo</b></span></div>
+        </div>
+        <div class="impact"><div class="score">91</div><span class="chip neg">CRITICAL</span></div>
+      </div>
+
+      <div class="task">
+        <div class="sq">T3</div>
+        <div>
+          <div class="title">Reduce paid bid on brand keywords ("babli", "babli in", "babli clothing")</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">All rank #1 organically. Reallocate ₹16K/mo to non-brand commercial intent gaps. Coordinate with paid lead.</div>
+          <div class="meta"><span>Owner: <b>Performance</b></span><span>Effort: <b>1h</b></span><span>Type: <b>Budget</b></span><span>Expected: <b style="color:var(--pos)">+₹14.2L/yr</b></span></div>
+        </div>
+        <div class="impact"><div class="score">90</div><span class="chip neg">CRITICAL</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;color:var(--navy);font-weight:700">Medium Impact</h3>
+        <span style="font-size:12.5px;color:var(--ink-3)">Combined uplift: <b style="color:var(--pos)">+₹82K/mo</b></span>
+      </div>
+
+      <div class="task">
+        <div class="sq alt">T4</div>
+        <div>
+          <div class="title">Refresh "Airport Outfits" blog &amp; add FAQ schema</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Replace 2024 product cards, update intro, add 5-question FAQ block. Decay risk active.</div>
+          <div class="meta"><span>Owner: <b>Content</b></span><span>Effort: <b>2h</b></span><span>Type: <b>Refresh</b></span><span>Expected: <b style="color:var(--pos)">+₹14K/mo</b></span></div>
+        </div>
+        <div class="impact"><div class="score">76</div><span class="chip warn">HIGH</span></div>
+      </div>
+
+      <div class="task">
+        <div class="sq alt">T5</div>
+        <div>
+          <div class="title">Build category page for "bottoms for women"</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">2,400 vol/mo · currently ranked #6 with thin collection. Add 120-word intro, 4 sub-categories, FAQs.</div>
+          <div class="meta"><span>Owner: <b>SEO + Merch</b></span><span>Effort: <b>1d</b></span><span>Type: <b>New page</b></span><span>Expected: <b style="color:var(--pos)">+₹22K/mo</b></span></div>
+        </div>
+        <div class="impact"><div class="score">74</div><span class="chip warn">HIGH</span></div>
+      </div>
+
+      <div class="task">
+        <div class="sq alt">T6</div>
+        <div>
+          <div class="title">Internal-link sweep on 42 orphan pages with GSC clicks</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Add ≥3 contextual links into each from blog &amp; high-authority collections. Use Linkstorm.</div>
+          <div class="meta"><span>Owner: <b>Content</b></span><span>Effort: <b>1d</b></span><span>Type: <b>Linking</b></span><span>Expected: <b style="color:var(--pos)">+₹22K/mo</b></span></div>
+        </div>
+        <div class="impact"><div class="score">71</div><span class="chip warn">HIGH</span></div>
+      </div>
+
+      <div class="task">
+        <div class="sq alt">T7</div>
+        <div>
+          <div class="title">Resolve "tie dye dress" cannibalisation</div>
+          <div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Canonical /products/tie-dye-pink-maxi → /collections/rang-tie-dye OR differentiate page intent.</div>
+          <div class="meta"><span>Owner: <b>SEO</b></span><span>Effort: <b>2h</b></span><span>Type: <b>Technical</b></span><span>Expected: <b style="color:var(--pos)">+₹6K/mo</b></span></div>
+        </div>
+        <div class="impact"><div class="score">68</div><span class="chip warn">HIGH</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;color:var(--navy);font-weight:700">Quick Wins</h3>
+        <span style="font-size:12.5px;color:var(--ink-3)">Combined: <b style="color:var(--pos)">+₹38K/mo</b> · all under 2h</span>
+      </div>
+      <div class="grid g-2">
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q1</div>
+          <div><div class="title">Add FAQ schema to top 12 blogs</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">Capture People-Also-Ask + featured snippets</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹12K</div></div></div>
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q2</div>
+          <div><div class="title">Compress hero images on /below-2000</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">480KB → &lt;120KB, LCP -1.2s</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹6K</div></div></div>
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q3</div>
+          <div><div class="title">301 redirect 9 stockout PDPs to collections</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">Preserve link equity, prevent rank loss</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹8K</div></div></div>
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q4</div>
+          <div><div class="title">Add alt text to 1,209 product images</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">Auto-generate via Shopify bulk editor</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹2K</div></div></div>
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q5</div>
+          <div><div class="title">Set up GA4 audience: "Organic Returning"</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">Trigger lifecycle email at day-7</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹6K</div></div></div>
+        <div class="task" style="margin-bottom:0"><div class="sq q">Q6</div>
+          <div><div class="title">Add LLMs.txt + ai.txt files</div><div style="font-size:12px;color:var(--ink-3);margin-top:4px">Prepare for AI search referrer growth</div></div>
+          <div class="impact"><div class="score" style="color:var(--pos)">+₹4K</div></div></div>
+      </div>
+    </div>
+
+    <div class="card tinted" style="margin-top:28px">
+      <div class="card-head"><div><h3>Sprint Outcome — If All High + Medium Ship in 14 Days</h3><p>Combined business case from this report</p></div><span class="chip pos">+₹2.66L/mo combined</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:6px">
+        <div><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Incremental Revenue / mo</div><div style="font-size:24px;font-weight:700;color:var(--pos);margin-top:4px">₹2.66 L</div></div>
+        <div><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Incremental Clicks / mo</div><div style="font-size:24px;font-weight:700;color:var(--navy);margin-top:4px">+4,180</div></div>
+        <div><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Engineering hours</div><div style="font-size:24px;font-weight:700;color:var(--navy);margin-top:4px">18 h</div></div>
+        <div><div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Annualised ROI</div><div style="font-size:24px;font-weight:700;color:var(--pos);margin-top:4px">₹46.1 L</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       12 · ABBREVIATIONS
+       ========================================================= -->
+  <section class="section" id="abbr">
+    <div class="section-head">
+      <div class="eyebrow">Reference</div>
+      <h2>Abbreviations</h2>
+      <p>Glossary of every abbreviated term used throughout this report.</p>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <thead><tr><th style="width:130px">Abbreviation</th><th>Full Form</th><th>Definition / Notes</th></tr></thead>
+        <tbody>
+          <tr><td><b>SEO</b></td><td>Search Engine Optimisation</td><td>Practice of improving site visibility in unpaid search results.</td></tr>
+          <tr><td><b>GA4</b></td><td>Google Analytics 4</td><td>Event-based web analytics platform.</td></tr>
+          <tr><td><b>GSC</b></td><td>Google Search Console</td><td>Source for impressions, clicks, CTR and position data.</td></tr>
+          <tr><td><b>SERP</b></td><td>Search Engine Results Page</td><td>The Google results page for a query.</td></tr>
+          <tr><td><b>CTR</b></td><td>Click-Through Rate</td><td>Clicks ÷ impressions.</td></tr>
+          <tr><td><b>CVR</b></td><td>Conversion Rate</td><td>Orders ÷ sessions.</td></tr>
+          <tr><td><b>AOV</b></td><td>Average Order Value</td><td>Revenue ÷ orders.</td></tr>
+          <tr><td><b>ROAS</b></td><td>Return on Ad Spend</td><td>Revenue ÷ ad spend (for paid). "SEO ROAS equivalent" is calculated against the cost basis of SEO effort.</td></tr>
+          <tr><td><b>CAC</b></td><td>Customer Acquisition Cost</td><td>Cost to acquire one paying customer.</td></tr>
+          <tr><td><b>CPC</b></td><td>Cost Per Click</td><td>Average paid cost per click on ads.</td></tr>
+          <tr><td><b>CPS</b></td><td>Cost Per Session</td><td>Spend ÷ sessions delivered.</td></tr>
+          <tr><td><b>LTV</b></td><td>Lifetime Value</td><td>Predicted revenue from a customer over their lifecycle.</td></tr>
+          <tr><td><b>SKU</b></td><td>Stock Keeping Unit</td><td>Unique product variant identifier.</td></tr>
+          <tr><td><b>PDP</b></td><td>Product Detail Page</td><td>Individual product page on the website.</td></tr>
+          <tr><td><b>PLP</b></td><td>Product Listing Page</td><td>Category / collection page showing multiple products.</td></tr>
+          <tr><td><b>LP</b></td><td>Landing Page</td><td>Any page where a visitor lands from search.</td></tr>
+          <tr><td><b>DA</b></td><td>Domain Authority</td><td>SEMrush domain authority score, 0–100.</td></tr>
+          <tr><td><b>DR</b></td><td>Domain Rating</td><td>Ahrefs equivalent of DA.</td></tr>
+          <tr><td><b>H1</b></td><td>Heading Level 1</td><td>Primary on-page heading tag.</td></tr>
+          <tr><td><b>CWV</b></td><td>Core Web Vitals</td><td>Google's UX performance metrics: LCP, INP, CLS.</td></tr>
+          <tr><td><b>LCP</b></td><td>Largest Contentful Paint</td><td>Time taken for largest above-the-fold element to render.</td></tr>
+          <tr><td><b>INP</b></td><td>Interaction to Next Paint</td><td>Time taken for the page to respond to user input.</td></tr>
+          <tr><td><b>CLS</b></td><td>Cumulative Layout Shift</td><td>Visual stability score of the page.</td></tr>
+          <tr><td><b>CrUX</b></td><td>Chrome User Experience Report</td><td>Field data source for CWV from real Chrome users.</td></tr>
+          <tr><td><b>FAQ</b></td><td>Frequently Asked Questions</td><td>Structured Q&amp;A content, often with schema markup.</td></tr>
+          <tr><td><b>UTM</b></td><td>Urchin Tracking Module</td><td>URL parameters used for campaign tracking.</td></tr>
+          <tr><td><b>MoM</b></td><td>Month over Month</td><td>Comparison vs the previous month.</td></tr>
+          <tr><td><b>WoW</b></td><td>Week over Week</td><td>Comparison vs the previous week.</td></tr>
+          <tr><td><b>MTD</b></td><td>Month to Date</td><td>From the 1st of the current month to today.</td></tr>
+          <tr><td><b>YTD</b></td><td>Year to Date</td><td>From Jan 1 of the current year to today.</td></tr>
+          <tr><td><b>P50 / P90</b></td><td>50th / 90th Percentile</td><td>Statistical confidence levels for ranges.</td></tr>
+          <tr><td><b>ARIMA</b></td><td>Auto-Regressive Integrated Moving Average</td><td>Statistical model used for time-series projections.</td></tr>
+          <tr><td><b>MTD ₹L</b></td><td>Lakh</td><td>Indian numbering unit · 1 L = ₹100,000.</td></tr>
+          <tr><td><b>PMax</b></td><td>Performance Max (Google Ads campaign type)</td><td>Google's automated campaign across all inventory.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div>Babli · SEO Intelligence Operating System · v3.0 · Last sync 4 min ago<br>Source: Windsor.ai → GA4, GSC, SEMrush, Shopify, Google Ads, Meta Ads</div>
+    <div style="text-align:right">Powered By GreenHonchos · MTD 1–21 May 2026<br>Confidential — internal executive report</div>
+  </div>
+
+</main>
+</div>
+
+<!-- ============================================================
+     SCRIPTS — Chart.js + datalabels + tab switcher
+     ============================================================ -->
+<script>
+// register datalabels plugin globally
+Chart.register(ChartDataLabels);
+Chart.defaults.color = '#3D4A63';
+Chart.defaults.font.family = "Helvetica, 'Helvetica Neue', Arial, sans-serif";
+Chart.defaults.font.size = 11.5;
+Chart.defaults.borderColor = 'rgba(9,60,118,.08)';
+// every chart should fill its .chart-wrap container, regardless of aspect ratio
+Chart.defaults.responsive = true;
+Chart.defaults.maintainAspectRatio = false;
+Chart.defaults.plugins.legend.labels = {
+  boxWidth: 10, boxHeight: 10, usePointStyle: true,
+  font:{size:11.5, weight:'600'}, color:'#3D4A63', padding:14
+};
+Chart.defaults.plugins.tooltip = {
+  backgroundColor:'#093C76', titleColor:'#FFFFF0', bodyColor:'#FFFFF0',
+  borderColor:'#093C76', borderWidth:0, padding:10, cornerRadius:6,
+  titleFont:{weight:'700',size:12}, bodyFont:{size:12},
+  displayColors:true, boxPadding:4
+};
+// disable datalabels by default; opt-in per chart
+Chart.defaults.plugins.datalabels = { display:false };
+
+// palette
+const C = {
+  navy:'#093C76', navy2:'#1659AD', navy3:'#4A7BC4', navy4:'#8FB1DB',
+  gold:'#B8801A', goldL:'#D9A848',
+  pos:'#1F7A4D', neg:'#B3261E', warn:'#B8801A',
+  rule:'rgba(9,60,118,.08)', cream:'#FAF7E4'
+};
+
+// gradient helper
+function grad(ctx, area, c1, c2){
+  const g = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+  g.addColorStop(0, c1); g.addColorStop(1, c2); return g;
+}
+function gradN(ctx, area){ return grad(ctx, area, 'rgba(9,60,118,.35)', 'rgba(9,60,118,0)'); }
+
+// =============== EXEC: revenue vs sessions ===============
+const monthsM = ['Dec','Jan','Feb','Mar','Apr','May'];
+new Chart(document.getElementById('execRev'),{
+  type:'line',
+  data:{ labels:monthsM,
+    datasets:[
+      { label:'Organic Revenue (₹ k)', data:[224,228,332,574,448,339], yAxisID:'y',
+        borderColor:C.navy, borderWidth:2.5, tension:.4,
+        backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(9,60,118,.2)';return gradN(ctx,chartArea);},
+        fill:true, pointRadius:4, pointBackgroundColor:C.navy, pointBorderColor:'#fff', pointBorderWidth:1.5,
+        datalabels:{display:true,align:'top',anchor:'end',color:C.navy,font:{weight:'700',size:10},formatter:v=>'₹'+v+'k'}
+      },
+      { label:'Organic Sessions', data:[5587,4510,6008,7849,7382,5129], yAxisID:'y1',
+        borderColor:C.gold, borderWidth:2, borderDash:[5,4], tension:.35, pointRadius:3, pointBackgroundColor:C.gold,
+        datalabels:{display:false}
+      }
+    ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom'}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#6B7691',font:{weight:'600'}}},
+      y:{position:'left', grid:{color:C.rule}, ticks:{callback:v=>'₹'+v+'k',color:'#6B7691'},title:{display:true,text:'Revenue (₹ k)',color:'#6B7691',font:{weight:'700',size:11}}},
+      y1:{position:'right', grid:{display:false}, ticks:{callback:v=>(v/1000).toFixed(1)+'k',color:'#6B7691'},title:{display:true,text:'Sessions',color:'#6B7691',font:{weight:'700',size:11}}}
+    }}
+});
+
+// =============== EXEC: channel mix donut ===============
+new Chart(document.getElementById('execMix'),{
+  type:'doughnut',
+  data:{ labels:['Direct (41%)','Other (24.9%)','Paid (18.4%)','Social (12%)','Organic (3.7%)'],
+    datasets:[{ data:[41,24.9,18.4,12,3.7],
+      backgroundColor:[C.navy,C.navy3,C.gold,C.navy4,C.pos],
+      borderWidth:2, borderColor:'#fff', hoverOffset:8 }]},
+  options:{cutout:'62%',
+    plugins:{
+      legend:{position:'right',align:'center',labels:{boxWidth:10,padding:10,font:{size:11.5,weight:'600'}}},
+      datalabels:{display:true, color:'#fff', font:{weight:'700',size:11},
+        formatter:(v)=>v+'%',
+        anchor:'center',align:'center'}
+    }}
+});
+
+// =============== HEALTH radar ===============
+new Chart(document.getElementById('healthRadar'),{
+  type:'radar',
+  data:{ labels:['Performance','Crawl','Index','Schema','Links','CWV','Mobile'],
+    datasets:[
+      { label:'Now', data:[100,90,94,62,70,92,88],
+        borderColor:C.navy, backgroundColor:'rgba(9,60,118,.18)', borderWidth:2, pointBackgroundColor:C.navy, pointRadius:3},
+      { label:'Last Month', data:[96,93,92,55,74,86,84],
+        borderColor:C.gold, backgroundColor:'rgba(184,128,26,.10)', borderWidth:1.5, pointBackgroundColor:C.gold, pointRadius:2, borderDash:[4,4]}
+    ]},
+  options:{plugins:{legend:{position:'bottom'},datalabels:{display:false}},
+    scales:{r:{ suggestedMin:30, suggestedMax:100,
+      grid:{color:C.rule},angleLines:{color:C.rule},
+      pointLabels:{font:{size:11,weight:'600'},color:'#3D4A63'}, ticks:{display:false}}}}
+});
+
+// =============== GROWTH trend ===============
+new Chart(document.getElementById('growthTrend'),{
+  type:'line',
+  data:{ labels:monthsM,
+    datasets:[
+      { label:'Revenue (₹ k)', data:[224,228,332,574,448,339], yAxisID:'y',
+        borderColor:C.navy, borderWidth:2.5, tension:.4,
+        backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(9,60,118,.2)';return gradN(ctx,chartArea);},
+        fill:true, pointRadius:4, pointBackgroundColor:C.navy,
+        datalabels:{display:true,align:'top',anchor:'end',color:C.navy,font:{weight:'700',size:10},formatter:v=>'₹'+v+'k'}
+      },
+      { label:'Sessions', data:[5587,4510,6008,7849,7382,5129], yAxisID:'y1',
+        borderColor:C.gold, borderWidth:2, tension:.35, pointRadius:3, pointBackgroundColor:C.gold,
+        datalabels:{display:false}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},
+      y:{position:'left',grid:{color:C.rule},ticks:{callback:v=>'₹'+v+'k'},title:{display:true,text:'Revenue (₹ k)',color:'#6B7691',font:{weight:'700',size:11}}},
+      y1:{position:'right',grid:{display:false},ticks:{callback:v=>(v/1000).toFixed(1)+'k'},title:{display:true,text:'Sessions',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Brand vs Non-brand ===============
+new Chart(document.getElementById('brandSplit'),{
+  type:'bar',
+  data:{ labels:['Jan','Feb','Mar','Apr','May'],
+    datasets:[
+      {label:'Brand', data:[58,55,52,53,54], backgroundColor:C.navy, borderRadius:5, stack:'a',
+        datalabels:{display:true,color:'#fff',font:{weight:'700',size:10},formatter:v=>v+'%'}},
+      {label:'Non-brand', data:[42,45,48,47,46], backgroundColor:C.gold, borderRadius:5, stack:'a',
+        datalabels:{display:true,color:'#fff',font:{weight:'700',size:10},formatter:v=>v+'%'}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{stacked:true,grid:{display:false}},
+      y:{stacked:true,grid:{color:C.rule},ticks:{callback:v=>v+'%'},max:100,title:{display:true,text:'Click share',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== RPS sparkline ===============
+new Chart(document.getElementById('rps'),{
+  type:'line',
+  data:{ labels:['Dec','Jan','Feb','Mar','Apr','May'],
+    datasets:[{ label:'₹ / session', data:[42,48,55,62,57,66],
+      borderColor:C.pos, borderWidth:2.5, tension:.4, pointRadius:3, pointBackgroundColor:C.pos,
+      backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(31,122,77,.2)';return grad(ctx,chartArea,'rgba(31,122,77,.30)','rgba(31,122,77,0)');}, fill:true,
+      datalabels:{display:true,align:'top',anchor:'end',color:C.pos,font:{weight:'700',size:10},formatter:v=>'₹'+v}}]},
+  options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},ticks:{callback:v=>'₹'+v}}}}
+});
+
+// =============== NEW vs RETURNING trend ===============
+new Chart(document.getElementById('nrTrend'),{
+  type:'line',
+  data:{ labels:['W-7','W-6','W-5','W-4','W-3','W-2','W-1','Now'],
+    datasets:[
+      { label:'New Sessions', data:[480,520,560,580,600,620,640,612],
+        borderColor:C.navy2, backgroundColor:'rgba(22,89,173,.15)', borderWidth:2, tension:.35,
+        pointRadius:3, pointBackgroundColor:C.navy2, fill:true,
+        datalabels:{display:false}},
+      { label:'Returning Sessions', data:[380,420,450,480,510,540,558,564],
+        borderColor:C.navy, backgroundColor:'rgba(9,60,118,.18)', borderWidth:2, tension:.35,
+        pointRadius:3, pointBackgroundColor:C.navy, fill:true,
+        datalabels:{display:false}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},title:{display:true,text:'Sessions / week',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== NEW vs RETURNING comparison bars ===============
+new Chart(document.getElementById('nrBars'),{
+  type:'bar',
+  data:{ labels:['CVR (%)','Pages / Sess','Bounce (%)','AOV (₹100)'],
+    datasets:[
+      { label:'New', data:[1.5,2.4,36,28.2], backgroundColor:C.gold, borderRadius:5,
+        datalabels:{display:true,color:C.gold,anchor:'end',align:'top',font:{weight:'700',size:10}}},
+      { label:'Returning', data:[3.6,4.6,23,29.0], backgroundColor:C.navy, borderRadius:5,
+        datalabels:{display:true,color:C.navy,anchor:'end',align:'top',font:{weight:'700',size:10}}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule}}}}
+});
+
+// =============== SERP position distribution ===============
+new Chart(document.getElementById('posDist'),{
+  type:'bar',
+  data:{ labels:['1-3','4-10','11-20','21-50','51-100'],
+    datasets:[
+      {label:'Now', data:[31,82,96,412,364], backgroundColor:C.navy, borderRadius:6,
+        datalabels:{display:true,color:C.navy,anchor:'end',align:'top',font:{weight:'700',size:10}}},
+      {label:'Previous', data:[26,74,88,398,358], backgroundColor:C.navy4, borderRadius:6,
+        datalabels:{display:false}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false},title:{display:true,text:'Position bucket',color:'#6B7691',font:{weight:'700',size:11}}},
+      y:{grid:{color:C.rule},title:{display:true,text:'Keywords',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Content decay ===============
+new Chart(document.getElementById('decay'),{
+  type:'line',
+  data:{ labels:['W-8','W-7','W-6','W-5','W-4','W-3','W-2','W-1'],
+    datasets:[
+      { label:'Goa Dresses (Fresh)', data:[420,440,460,490,520,540,580,612],
+        borderColor:C.pos, tension:.4, pointRadius:0, borderWidth:2.5},
+      { label:'Airport Outfits (Decay)', data:[480,460,440,410,380,360,340,318],
+        borderColor:C.neg, tension:.4, pointRadius:0, borderWidth:2.5},
+      { label:'Crop Top (Refresh)', data:[280,275,260,250,240,232,222,218],
+        borderColor:C.gold, tension:.4, pointRadius:0, borderWidth:2, borderDash:[5,4]}
+    ]},
+  options:{plugins:{legend:{position:'bottom'},datalabels:{display:false}},
+    scales:{x:{grid:{display:false},title:{display:true,text:'Weeks ago',color:'#6B7691',font:{weight:'700',size:11}}},
+      y:{grid:{color:C.rule},title:{display:true,text:'Weekly sessions',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Guides trend (Guides tab) ===============
+new Chart(document.getElementById('guidesTrend'),{
+  type:'line',
+  data:{ labels:['Dec','Jan','Feb','Mar','Apr','May'],
+    datasets:[
+      { label:'Sessions', data:[1820,2010,2380,3120,3850,4392],
+        borderColor:C.navy, backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(9,60,118,.2)';return gradN(ctx,chartArea);},
+        fill:true, borderWidth:2.5, tension:.4, pointRadius:3, pointBackgroundColor:C.navy,
+        datalabels:{display:true,align:'top',anchor:'end',color:C.navy,font:{weight:'700',size:10}}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},title:{display:true,text:'Monthly sessions',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Category bar chart with sessions ===============
+new Chart(document.getElementById('categoryBar'),{
+  type:'bar',
+  data:{ labels:['Dresses','Co-ord Sets','Tops','Shirts','Bottoms','Tie-Dye','Basics','Artsy'],
+    datasets:[
+      { label:'Revenue (₹ k)', data:[142,68,48,38,22,14,6,3], backgroundColor:C.navy, borderRadius:5, yAxisID:'y',
+        datalabels:{display:true,color:C.navy,anchor:'end',align:'top',font:{weight:'700',size:10},formatter:v=>'₹'+v+'k'}},
+      { label:'Sessions', data:[1824,912,688,512,198,312,124,68], backgroundColor:C.gold, borderRadius:5, yAxisID:'y1',
+        datalabels:{display:true,color:C.gold,anchor:'end',align:'top',font:{weight:'700',size:10}}}
+    ]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10,weight:'600'}}},
+      y:{position:'left',grid:{color:C.rule},ticks:{callback:v=>'₹'+v+'k'},title:{display:true,text:'Revenue (₹ k)',color:'#6B7691',font:{weight:'700',size:11}}},
+      y1:{position:'right',grid:{display:false},title:{display:true,text:'Sessions',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Device donut ===============
+new Chart(document.getElementById('deviceDonut'),{
+  type:'doughnut',
+  data:{ labels:['Mobile · 4,012','Desktop · 1,088','Tablet · 29'],
+    datasets:[{ data:[4012,1088,29],
+      backgroundColor:[C.navy,C.navy3,C.gold], borderWidth:2, borderColor:'#fff', hoverOffset:8 }]},
+  options:{cutout:'60%',
+    plugins:{legend:{position:'bottom'},
+      datalabels:{display:true,color:'#fff',font:{weight:'700',size:11},formatter:(v,ctx)=>{const sum=ctx.dataset.data.reduce((a,b)=>a+b,0);return Math.round(v/sum*100)+'%';}}}}
+});
+
+// =============== Cohort retention ===============
+new Chart(document.getElementById('cohort'),{
+  type:'line',
+  data:{ labels:['D0','D7','D14','D30','D60','D90'],
+    datasets:[
+      { label:'Dec', data:[100,18,12,8,5,3], borderColor:'#95A0B8', borderWidth:1.5, tension:.35, pointRadius:0},
+      { label:'Jan', data:[100,22,16,10,6,4], borderColor:'#6B7691', borderWidth:1.5, tension:.35, pointRadius:0},
+      { label:'Feb', data:[100,24,18,13,9,6], borderColor:C.navy3, borderWidth:1.5, tension:.35, pointRadius:0},
+      { label:'Mar', data:[100,31,24,18,15,11], borderColor:C.navy, borderWidth:2.5, tension:.35, pointRadius:3, pointBackgroundColor:C.navy},
+      { label:'Apr', data:[100,29,21,16,12,null], borderColor:C.gold, borderWidth:2, tension:.35, pointRadius:0, borderDash:[4,3]}
+    ]},
+  options:{plugins:{legend:{position:'bottom'},datalabels:{display:false}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},ticks:{callback:v=>v+'%'},max:100,title:{display:true,text:'Retention %',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// =============== Efficiency radar SEO vs Paid ===============
+new Chart(document.getElementById('effRadar'),{
+  type:'radar',
+  data:{ labels:['Volume','Speed','CVR','AOV','CAC','LTV'],
+    datasets:[
+      { label:'Paid', data:[88,95,55,60,32,48], borderColor:C.gold, backgroundColor:'rgba(184,128,26,.18)', borderWidth:2, pointBackgroundColor:C.gold, pointRadius:3},
+      { label:'Organic', data:[58,42,92,86,95,90], borderColor:C.navy, backgroundColor:'rgba(9,60,118,.20)', borderWidth:2, pointBackgroundColor:C.navy, pointRadius:3}
+    ]},
+  options:{plugins:{legend:{position:'bottom'},datalabels:{display:false}},
+    scales:{r:{suggestedMin:0,suggestedMax:100,
+      grid:{color:C.rule},angleLines:{color:C.rule},
+      pointLabels:{font:{size:11,weight:'600'},color:'#3D4A63'},ticks:{display:false}}}}
+});
+
+// =============== ORGANIC CHANNELS — Search/Shopping/AI Referrals trend ===============
+new Chart(document.getElementById('orgChannels'),{
+  type:'line',
+  data:{ labels:monthsM,
+    datasets:[
+      { label:'Organic Search', data:[4720,4012,5310,6982,6716,4520],
+        borderColor:C.navy, backgroundColor:'rgba(9,60,118,.20)',
+        borderWidth:2.5, tension:.4, pointRadius:4, pointBackgroundColor:C.navy, fill:false,
+        datalabels:{display:true,align:'top',anchor:'end',color:C.navy,font:{weight:'700',size:10},formatter:v=>v.toLocaleString()}},
+      { label:'Organic Shopping', data:[820,454,672,841,661,526],
+        borderColor:C.gold, borderWidth:2, tension:.4, pointRadius:4, pointBackgroundColor:C.gold,
+        datalabels:{display:true,align:'bottom',anchor:'start',color:C.gold,font:{weight:'700',size:10},formatter:v=>v.toLocaleString()}},
+      { label:'AI Referrals', data:[18,30,42,56,54,29],
+        borderColor:C.pos, borderWidth:2, tension:.4, pointRadius:4, pointBackgroundColor:C.pos,
+        borderDash:[4,3],
+        datalabels:{display:true,align:'top',anchor:'end',color:C.pos,font:{weight:'700',size:10},formatter:v=>v.toLocaleString()}}
+    ]},
+  options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,usePointStyle:true,padding:14,font:{size:12,weight:'600'}}}},
+    scales:{
+      x:{grid:{display:false},title:{display:true,text:'Month',color:'#6B7691',font:{weight:'700',size:11}}},
+      y:{grid:{color:C.rule},title:{display:true,text:'Sessions / month',color:'#6B7691',font:{weight:'700',size:11}},beginAtZero:true}
+    }}
+});
+
+// =============== CVR TREND ===============
+new Chart(document.getElementById('cvrTrend'),{
+  type:'line',
+  data:{ labels:monthsM,
+    datasets:[{ label:'Organic CVR %', data:[1.6,1.9,2.3,2.6,2.4,2.3],
+      borderColor:C.navy, borderWidth:2.5, tension:.4, pointRadius:4, pointBackgroundColor:C.navy,
+      backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(9,60,118,.2)';return gradN(ctx,chartArea);}, fill:true,
+      datalabels:{display:true,align:'top',anchor:'end',color:C.navy,font:{weight:'700',size:11},formatter:v=>v+'%'}}]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},ticks:{callback:v=>v+'%'},title:{display:true,text:'Conversion Rate %',color:'#6B7691',font:{weight:'700',size:11}},beginAtZero:true,suggestedMax:3.2}}}
+});
+
+// =============== AOV TREND ===============
+new Chart(document.getElementById('aovTrend'),{
+  type:'line',
+  data:{ labels:monthsM,
+    datasets:[{ label:'Organic AOV (₹)', data:[2495,2510,2615,2820,2545,2873],
+      borderColor:C.gold, borderWidth:2.5, tension:.4, pointRadius:4, pointBackgroundColor:C.gold,
+      backgroundColor:(c)=>{const{ctx,chartArea}=c.chart;if(!chartArea) return 'rgba(184,128,26,.2)';return grad(ctx,chartArea,'rgba(184,128,26,.30)','rgba(184,128,26,0)');}, fill:true,
+      datalabels:{display:true,align:'top',anchor:'end',color:C.gold,font:{weight:'700',size:11},formatter:v=>'₹'+v}}]},
+  options:{plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.rule},ticks:{callback:v=>'₹'+v},title:{display:true,text:'Average Order Value (₹)',color:'#6B7691',font:{weight:'700',size:11}}}}}
+});
+
+// Microsoft Clarity charts are intentionally not initialised — connection required.
+
+// =============== TAB SWITCHER (Blog / Guides / Lookbooks) ===============
+document.querySelectorAll('.tabs').forEach(group=>{
+  const set = group.dataset.tabset;
+  group.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tab = btn.dataset.tab;
+      // toggle button on state
+      group.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b===btn));
+      // toggle panels
+      document.querySelectorAll(`[data-tabpanel="${set}"]`).forEach(p=>{
+        p.classList.toggle('on', p.dataset.tab===tab);
+      });
+    });
+  });
+});
+
+// =============== SIDEBAR NAV — smooth scroll + scroll-spy ===============
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(a=>{
+  a.addEventListener('click', e=>{
+    const tgt = document.querySelector(a.getAttribute('href'));
+    if(tgt){ e.preventDefault(); window.scrollTo({top:tgt.offsetTop-16, behavior:'smooth'}); }
+  });
+});
+const sections = document.querySelectorAll('section.section');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    const top = s.offsetTop - 120;
+    if (window.scrollY >= top) current = s.id;
+  });
+  navItems.forEach(n => {
+    n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
